@@ -1546,7 +1546,7 @@ Contains a compressed string
 === SystemIndex_GthrPth
 [yellow-background]*Contains information about locations (paths) indexed (gathered).*
 
-===== Windows XP Search
+==== Windows XP Search
 
 [cols="1,3,5",options="header"]
 |===
@@ -1555,7 +1555,7 @@ Contains a compressed string
 | 256 | LookupValue | Large text
 |===
 
-===== Windows Vista Search
+==== Windows Vista Search
 
 [cols="1,3,5",options="header"]
 |===
@@ -1565,7 +1565,7 @@ Contains a compressed string
 | 256 | LookupValue | Large text
 |===
 
-===== Windows 7 and 8 Search
+==== Windows 7 and 8 Search
 
 [cols="1,3,5",options="header"]
 |===
@@ -1576,7 +1576,7 @@ Contains a compressed string
 |===
 
 === SystemIndex_Gthr_RecCount
-===== Windows XP and VIsta Search
+==== Windows XP and VIsta Search
 
 [cols="1,3,5",options="header"]
 |===
@@ -2117,8 +2117,8 @@ For the compressed data:
 1. read the byte containing the 'compression size'
 2. read the 'compressed byte'
 3. for the 'compression size' greater than 0
-  1. read a byte from the compressed data and add it to the uncompressed data
-  2. add the 'compressed byte' to the uncompressed data
+  a. read a byte from the compressed data and add it to the uncompressed data
+  b. add the 'compressed byte' to the uncompressed data
 
 === 8-bit compressed UTF16 little-endian string
 For the compressed data:
@@ -2144,11 +2144,11 @@ uncompressed data.
 
 1. Build a compression value table based on the byte index table
 2. Decompress the compressed data using the compression value table
-  1. if the compression value is compressed
-    1. determine the compression offset
-    2. determine the compression size, similar to DIRECT2
-    3. copy a part of the uncompressed buffer, similar to LZ77
-    2. otherwise use the byte value
+  a. if the compression value is compressed
+    i) determine the compression offset
+    ii) determine the compression size, similar to DIRECT2
+    iii) copy a part of the uncompressed buffer, similar to LZ77
+    iv) otherwise use the byte value
 
 [NOTE]
 The string seems to be using a codepage for the 8-bit value, although the 
