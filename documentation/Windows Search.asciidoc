@@ -1,0 +1,1594 @@
+= Windows Search
+Analysis of the Windows Search Database
+
+:numbered!:
+[abstract]
+== Summary
+Windows Search uses the Extensible Storage Engine (ESE) Database File (EDB) 
+format to store its data. This specification is based on reverse engineering.
+
+This document is intended as a working document for the Windows Search database 
+format specification. Which should allow existing Open Source forensic tooling 
+to be able to process this file type.
+
+[preface]
+== Document information
+[cols="1,5"]
+|===
+| Author(s): | Joachim Metz <joachim.metz@gmail.com>
+| Abstract: | This document contains information about the Extensible Storage Engine Database File format
+| Classification: | Public
+| Keywords: | Windows Search, Extensible Storage Engine, ESE, EDB
+|===
+
+[preface]
+== License
+....
+Copyright (C) 2009-2015, Joachim Metz <joachim.metz@gmail.com>.
+Permission is granted to copy, distribute and/or modify this document under the 
+terms of the GNU Free Documentation License, Version 1.3 or any later version 
+published by the Free Software Foundation; with no Invariant Sections, no 
+Front-Cover Texts, and no Back-Cover Texts. A copy of the license is included 
+in the section entitled "GNU Free Documentation License".
+....
+
+[preface]
+== Revision history
+[cols="1,1,1,5",options="header"]
+|===
+| Version | Author | Date | Comments
+| 0.0.1 | J.B. Metz | September 2009 +
+October 2009 | Worked on initial version. +
+Added information about Windows XP Search.
+| 0.0.2 | J.B. Metz | November 2009 | Added information about Windows Vista Search.
+| 0.0.3 | J.B. Metz | February 2010 +
+May 2010 +
+June 2010 | Added information about Windows 7 Search.
+| 0.0.4 | J.B. Metz | July 2010 | Added information about files and Registry from `[DOUGLAS09]`.
+| 0.0.5 | J.B. Metz | November 2010 | Added information about compression types.
+| 0.0.6 | J.B. Metz | August 2011 | Added information about compression types. +
+License update.
+| 0.0.7 | J.B. Metz | May 2012 | Updates for Windows 8 Consumer Preview.
+| 0.0.8 | J.B. Metz | August 2012 | Email change.
+| 0.0.9 | J.B. Metz | April 2014 | Small changes.
+| 0.0.10 | J.B. Metz | March 2015 | Switched to asccidoc format.
+|===
+
+:numbered:
+== Overview
+Windows Search uses the Extensible Storage Engine (ESE) Database File (EDB) 
+format to store its data. Windows Search stores its data in a directory named:
+....
+%Common Program Data%\Microsoft\Search\Data\Applications\Windows\
+....
+
+On Windows XP and earlier:
+....
+C:\Documents and Settings\All Users\Application Data\Microsoft\Search\Data\Applications\Windows\
+....
+
+On Windows Vista and later:
+....
+C:\ProgramData\Microsoft\Search\Data\Applications\Windows\
+....
+
+The default location of this directory is dependent on the Windows version and 
+is controlled by the DataDirectory value in the following Registry Key:
+....
+HKLM\Software\Microsoft\Windows Search
+....
+
+This directory contains several files of which the following:
+
+Database file:
+....
+Windows.edb
+....
+
+For more information about EDB see `[LIBESEDB09]`.
+
+Checkpoint file:
+....
+MSS.chk
+....
+
+Current transaction log file:
+....
+MSS.chk
+....
+
+Transaction log files:
+....
+MSS#####.log
+....
+
+Reserved transaction log files:
+....
+MSSres00001.jrs
+MSSres00002.jrs
+....
+
+From: `[DOUGLAS09]`
+____
+These log files are created at service start and provide a reserved area for 
+logging shutdown transactions in the event that the disk becomes full and the 
+normal transaction logs cannot be written to.
+____
+
+Temporary Database file:
+....
+tmp.edb
+....
+
+This files contains the temporary data tables and indices used during index 
+merge operations.
+
+
+=== Test version
+The following version of programs were used to test the information within this 
+document:
+
+* Windows XP Search (Windows Search 4)
+* Windows Vista Search
+* Windows 7 Search
+
+== Tables
+=== `__NameTable__`
+The `__NameTable__` contains information about the Windows Search application.
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | Version | Integer 32-bit signed
+| 2 | MaxDocId | Integer 32-bit signed
+| 3 | MaxSubId | Integer 32-bit signed
+| 4 | CurrentMaster | Integer 8-bit signed
+| 5 | DocCount | Integer 32-bit signed
+| 6 | StatusFlags | Integer 32-bit signed
+| 128 | AppCatName | Text
+| 129 | BaseTableName | Text
+|===
+
+=== CatalogManager_Properties
+==== Windows 8 Search
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IndexID | Integer 32-bit signed
+| 2 | PropertyID | Integer 32-bit signed
+| 256 | Property | Large binary data 
+|===
+
+=== CatalogStorageManager
+==== Windows 8 Search
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | CatalogID | Integer 32-bit signed
+| 2 | IsDeleted | Integer 32-bit signed
+| 256 | CatalogName | Text
+|===
+
+=== SystemIndex_0A
+==== Windows XP Search
+Most of the binary values in the Windows XP Search database are stored in 
+big-endian.
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | DocID | Integer 32-bit signed
+| 2 | `__SDID` | Binary data +
+Contains 32-bit big-endian integer value
+| 3 | System_Search_Rank | Integer 32-bit signed
+| 4 | System_Search_GatherTime | Binary data +
+Contains big-endian filetime
+| 5 | System_Size | Binary data +
+Contains 64-bit big-endian integer value
+| 6 | System_FileAttributes | Binary data +
+Contains 32-bit big-endian integer value +
+See section: <<file_attribute_flags,File attribute flags>>
+| 7 | System_DateModified | Binary data +
+Contains big-endian filetime
+| 8 | System_DateCreated | Binary data +
+Contains big-endian filetime
+| 9 | System_DateAccessed | Binary data +
+Contains big-endian filetime
+| 128 | System_ItemFolderNameDisplay | Text
+| 129 | System_ItemTypeText | Text
+| 130 | System_ItemType | Text
+| 256 | System_Photo_GainControlText | Text
+| 257 | System_Contact_BusinessHomePage | Text
+| 258 | System_IsIncomplete | Boolean
+| 259 | System_SDID | Binary data
+| 260 | System_DRM_IsProtected | Boolean
+| 261 | System_Contact_SpouseName | Large text
+| 262 | System_DateAcquired | Binary data +
+Contains big-endian filetime
+| 263 | System_Message_BccAddress | Large text
+| 264 | System_MIMEType | Text
+| 265 | System_IsDeleted | Boolean
+| 266 | System_Message_BccName | Large text
+| 267 | System_Message_CcAddress | Large text
+| 268 | System_Document_Contributor | Text
+| 269 | System_Search_HitCount | Integer 32-bit signed
+| 270 | System_Message_CcName | Large text
+| 271 | System_Search_AccessCount | Binary data
+| 272 | System_ItemFolderPathDisplay | Large text
+| 273 | System_Contact_EmailAddress2 | Large text
+| 274 | System_ItemPathDisplay | Large text
+| 275 | System_Search_LastIndexedTotalTime | Floating point double precision (64-bit)
+| 276 | System_Search_ReverseFileName | Large text
+| 277 | System_Communication_AccountName | Text
+| 278 | System_ItemUrl | Large text
+| 279 | System_IsRead | Boolean
+| 280 | System_Importance | Integer 32-bit signed
+| 281 | System_Contact_JobTitle | Text
+| 282 | System_ItemParticipants | Large text
+| 283 | System_FlagStatus | Integer 32-bit signed
+| 284 | System_Contact_OfficeLocation | Text
+| 285 | System_Message_FromAddress | Large text
+| 286 | System_Message_FromName | Large text
+| 287 | System_Message_Store | Text
+| 288 | System_Message_ToAddress | Large text
+| 289 | System_Photo_FlashText | Text
+| 290 | System_Message_ToName | Large text
+| 291 | System_Contact_WebPage | Large text
+| 292 | System_Contact_PrimaryAddressCountry | Text
+| 293 | System_Message_DateSent | Binary data
+| 294 | System_Task_CompletionStatus | Text
+| 295 | System_Message_DateReceived | Binary data +
+Contains big-endian filetime
+| 296 | System_Contact_CallbackTelephone | Text
+| 297 | System_Message_AttachmentNames | Text
+| 298 | System_Photo_ExposureTime | Floating point double precision (64-bit)
+| 299 | System_Contact_PrimaryAddressState | Text
+| 300 | System_Photo_FNumber | Floating point double precision (64-bit)
+| 301 | System_Contact_HomeTelephone | Text
+| 302 | System_FileOwner | Large text
+| 303 | System_Message_SenderName | Large text
+| 304 | System_Calendar_ShowTimeAsText | Text
+| 305 | System_Contact_PrimaryTelephone | Text
+| 306 | System_Contact_MailingAddress | Text
+| 307 | System_Contact_TTYTDDTelephone | Text
+| 308 | System_Image_HorizontalSize | Binary data
+| 309 | System_ProviderItemID | Text
+| 310 | System_Photo_MeteringModeText | Text
+| 311 | System_Image_VerticalSize | Binary data
+| 312 | System_Shell_OmitFromView | Text
+| 313 | System_Media_DateReleased | Text
+| 314 | System_ImportanceText | Text
+| 315 | System_Image_HorizontalResolution | Floating point double precision (64-bit)
+| 316 | System_Image_VerticalResolution | Floating point double precision (64-bit)
+| 317 | System_Image_BitDepth | Binary data
+| 318 | System_Contact_HomeAddressPostOfficeBox | Text
+| 319 | System_DateArchived | Binary data
+| 320 | System_Contact_PrimaryAddressCity | Text
+| 321 | System_Contact_MobileTelephone | Text
+| 322 | System_Photo_WhiteBalance | Binary data
+| 323 | System_FlagStatusText | Text
+| 324 | System_Media_FrameCount | Binary data
+| 325 | System_Media_Duration | Binary data
+| 326 | System_Image_Dimensions | Text
+| 327 | System_Audio_EncodingBitrate | Binary data
+| 328 | System_SharedWith | Text
+| 329 | System_Message_ToDoFlags | Integer 32-bit signed
+| 330 | System_Audio_SampleRate | Binary data
+| 331 | System_Audio_SampleSize | Binary data
+| 332 | System_Audio_ChannelCount | Binary data
+| 333 | System_EndDate | Binary data +
+Contains big-endian filetime
+| 334 | System_Video_StreamName | Text
+| 335 | System_Video_FrameWidth | Binary data
+| 336 | System_Photo_Event | Text
+| 337 | System_GPS_Date | Binary data
+| 338 | System_Contact_Birthday | Binary data
+| 339 | System_Video_FrameHeight | Binary data
+| 340 | System_Contact_PrimaryEmailAddress | Large text
+| 341 | System_Contact_HomeFaxNumber | Text
+| 342 | System_Video_FrameRate | Binary data
+| 343 | System_Video_EncodingBitrate | Binary data
+| 344 | System_Contact_HomeAddressPostalCode | Text
+| 345 | System_Contact_FullName | Large text
+| 346 | System_Video_SampleSize | Binary data
+| 347 | System_Contact_BusinessAddressPostOfficeBox | Text
+| 348 | System_Video_Compression | Text
+| 349 | System_Calendar_IsOnline | Boolean
+| 350 | System_Priority | Binary data
+| 351 | System_ParentalRatingReason | Text
+| 352 | System_DateImported | Binary data +
+Contains big-endian filetime
+| 353 | System_Status | Text
+| 354 | System_Message_HasAttachments | Boolean
+| 355 | System_Communication_HeaderItem | Boolean
+| 356 | System_Rating | Binary data
+| 357 | System_Communication_FollowupIconIndex | Integer 32-bit signed
+| 358 | System_Copyright | Text
+| 359 | System_Contact_HomeAddressCity | Text
+| 360 | System_Media_ClassPrimaryID | Text
+| 361 | System_Contact_BusinessFaxNumber | Text
+| 362 | System_Media_ClassSecondaryID | Text
+| 363 | System_Media_DateEncoded | Binary data +
+Contains big-endian filetime
+| 364 | System_Media_DVDID | Text
+| 365 | System_Contact_OtherAddressStreet | Text
+| 366 | System_Media_MCDI | Text
+| 367 | System_Contact_PersonalTitle | Text
+| 368 | System_Media_MetadataContentProvider | Text
+| 369 | System_Media_ContentDistributor | Text
+| 370 | System_Contact_MiddleName | Large text
+| 371 | System_Music_Composer | Large text
+| 372 | System_Video_Director | Large text
+| 373 | System_Contact_Suffix | Text
+| 374 | System_ParentalRating | Text
+| 375 | System_FlagColor | Binary data
+| 376 | System_Contact_NickName | Large text
+| 377 | System_Communication_TaskStatus | Binary data
+| 378 | System_Media_Producer | Large text
+| 379 | System_Media_Writer | Large text
+| 380 | System_RecordedTV_OriginalBroadcastDate | Binary data
+| 381 | System_Media_CollectionGroupID | Text
+| 382 | System_Audio_PeakValue | Binary data
+| 383 | System_Media_CollectionID | Text
+| 384 | System_Note_ColorText | Text
+| 385 | System_Media_ContentID | Text
+| 386 | System_RecordedTV_StationName | Text
+| 387 | System_Media_CreatorApplication | Text
+| 388 | System_Media_CreatorApplicationVersion | Text
+| 389 | System_IsFlaggedComplete | Boolean
+| 390 | System_Media_Publisher | Text
+| 391 | System_Music_Period | Text
+| 392 | System_Link_TargetParsingPath | Large text
+| 393 | System_Video_HorizontalAspectRatio | Binary data
+| 394 | System_Contact_AssistantName | Large text
+| 395 | System_Video_TotalBitrate | Binary data
+| 396 | System_Media_UserWebUrl | Large text
+| 397 | System_Video_FourCC | Binary data
+| 398 | System_Media_UniqueFileIdentifier | Text
+| 399 | System_Video_VerticalAspectRatio | Binary data
+| 400 | System_Media_EncodedBy | Text
+| 401 | System_Contact_PagerTelephone | Text
+| 402 | System_Media_ProtectionType | Text
+| 403 | System_Link_TargetSFGAOFlags | Binary data
+| 404 | System_Media_ProviderRating | Text
+| 405 | System_Media_ProviderStyle | Text
+| 406 | System_Media_UserNoAutoInfo | Text
+| 407 | System_Contact_CompanyMainTelephone | Text
+| 408 | System_IsFlagged | Boolean
+| 409 | System_Communication_SecurityFlags | Integer 32-bit signed
+| 410 | System_Contact_EmailAddresses | Large text
+| 411 | System_Calendar_OrganizerAddress | Large text
+| 412 | System_Message_IsFwdOrReply | Integer 32-bit signed
+| 413 | System_Contact_Department | Text
+| 414 | System_Communication_DateItemExpires | Binary data
+| 415 | System_DueDate | Binary data
+| 416 | System_Contact_BusinessAddressStreet | Text
+| 417 | System_Contact_PrimaryAddressPostalCode | Text
+| 418 | System_Contact_OtherAddressState | Text
+| 419 | System_Contact_LastName | Large text
+| 420 | System_StartDate | Binary data
+| 421 | System_Calendar_Location | Text
+| 422 | System_Photo_FocalLengthInFilm | Binary data
+| 423 | System_Calendar_IsRecurring | Boolean
+| 424 | System_Image_Compression | Binary data
+| 425 | System_Photo_OrientationText | Text
+| 426 | System_Journal_EntryType | Text
+| 427 | System_Contact_Anniversary | Binary data
+| 428 | System_ItemAuthors | Large text
+| 429 | System_IsAttachment | Boolean
+| 430 | System_Contact_HomeAddressState | Text
+| 431 | System_Message_SenderAddress | Large text
+| 432 | System_Contact_FirstName | Large text
+| 433 | System_Calendar_ShowTimeAs | Binary data
+| 434 | System_Calendar_ReminderTime | Binary data
+| 435 | System_Search_AutoSummary | Large binary data +
+Contains a compressed string
+| 436 | System_Project | Text
+| 437 | System_IsEncrypted | Boolean
+| 438 | System_ItemDate | Binary data +
+Contains big-endian filetime
+| 439 | System_Document_DocumentID | Text
+| 440 | System_Contact_BusinessTelephone | Text
+| 441 | System_Photo_CameraManufacturer | Text
+| 442 | System_Communication_TaskStatusText | Text
+| 443 | System_Photo_CameraModel | Text
+| 444 | System_Photo_Orientation | Binary data
+| 445 | System_Contact_BusinessAddressCity | Text
+| 446 | System_Contact_BusinessAddressPostalCode | Text
+| 447 | System_ItemNamePrefix | Large text
+| 448 | System_Contact_Profession | Text
+| 449 | System_Contact_OtherAddress | Text
+| 450 | System_Kind | Text
+| 451 | System_Message_ProofInProgress | Boolean
+| 452 | System_Calendar_OptionalAttendeeAddresses | Large text
+| 453 | System_Contact_OtherAddressPostalCode | Text
+| 454 | System_ThumbnailCacheId | Binary data +
+Contains 64-bit big-endian integer value
+| 455 | System_Category | Text
+| 456 | System_Photo_ShutterSpeed | Floating point double precision (64-bit)
+| 457 | System_MileageInformation | Text
+| 458 | System_Document_PresentationFormat | Text
+| 459 | System_Photo_Aperture | Floating point double precision (64-bit)
+| 460 | System_Document_ByteCount | Integer 32-bit signed
+| 461 | System_Document_LineCount | Integer 32-bit signed
+| 462 | System_Photo_ExposureBias | Floating point double precision (64-bit)
+| 463 | System_Document_ParagraphCount | Integer 32-bit signed
+| 464 | System_Contact_CarTelephone | Text
+| 465 | System_Document_SlideCount | Integer 32-bit signed
+| 466 | System_Contact_HomeAddress | Text
+| 467 | System_Photo_SubjectDistance | Floating point double precision (64-bit)
+| 468 | System_Search_Store | Text
+| 469 | System_Photo_MeteringMode | Binary data
+| 470 | System_Document_HiddenSlideCount | Integer 32-bit signed
+| 471 | System_Calendar_Resources | Text
+| 472 | System_Photo_LightSource | Binary data
+| 473 | System_Photo_Flash | Integer 8-bit unsigned
+| 474 | System_Photo_FocalLength | Floating point double precision (64-bit)
+| 475 | System_Photo_ExposureProgram | Binary data
+| 476 | System_IconIndex | Integer 32-bit signed
+| 477 | System_Document_Manager | Text
+| 478 | System_Company | Text
+| 479 | System_Photo_ISOSpeed | Binary data
+| 480 | System_Contact_OtherAddressCountry | Text
+| 481 | System_SoftwareUsed | Text
+| 482 | System_Message_Flags | Integer 32-bit signed
+| 483 | System_Contact_Label | Text
+| 484 | System_PriorityText | Text
+| 485 | System_ContentType | Text
+| 486 | System_SourceItem | Text
+| 487 | System_OriginalFileName | Large text
+| 488 | System_ContentStatus | Text
+| 489 | System_Language | Text
+| 490 | System_Document_Version | Text
+| 491 | System_Document_Division | Text
+| 492 | System_Media_SubscriptionContentId | Text
+| 493 | System_Contact_EmailAddress | Large text
+| 494 | System_Title | Large text
+| 495 | System_Subject | Large text
+| 496 | System_Author | Large text
+| 497 | System_Keywords | Text
+| 498 | System_Comment | Large text
+| 499 | System_ItemNameDisplay | Large text
+| 500 | System_FileExtension | Text
+| 501 | System_Document_LastAuthor | Large text
+| 502 | System_Document_RevisionNumber | Text
+| 503 | System_Document_TotalEditingTime | Binary data
+| 504 | System_Document_DatePrinted | Binary data
+| 505 | System_Message_ConversationID | Text
+| 506 | System_Identity | Text
+| 507 | System_Document_DateCreated | Binary data +
+Contains big-endian filetime
+| 508 | System_Contact_BusinessAddressState | Text
+| 509 | System_Message_ConversationIndex | Large binary data
+| 510 | System_Document_DateSaved | Binary data +
+Contains big-endian filetime
+| 511 | System_Document_PageCount | Integer 32-bit signed
+| 512 | System_Document_WordCount | Integer 32-bit signed
+| 513 | System_Document_CharacterCount | Integer 32-bit signed
+| 514 | System_Contact_EmailName | Large text
+| 515 | System_Calendar_ResponseStatus | Binary data
+| 516 | System_Photo_ProgramModeText | Text
+| 517 | System_FileFRN | Binary data
+| 518 | System_ApplicationName | Text
+| 519 | System_ItemName | Large text
+| 520 | System_KindText | Text
+| 521 | System_ItemFolderPathDisplayNarrow | Large text
+| 522 | System_Contact_FileAsName | Large text
+| 523 | System_Sensitivity | Binary data
+| 524 | System_Image_CompressionText | Text
+| 525 | System_Task_Owner | Large text
+| 526 | System_Contact_BusinessAddress | Text
+| 527 | System_Photo_MaxAperture | Floating point double precision (64-bit)
+| 528 | System_Document_ClientID | Text
+| 529 | System_Contact_AssistantTelephone | Text
+| 530 | System_FlagColorText | Text
+| 531 | System_Contact_PrimaryAddressPostOfficeBox | Text
+| 532 | System_Contact_BusinessAddressCountry | Text
+| 533 | System_Communication_PolicyTag | Text
+| 534 | System_Photo_ExposureProgramText | Text
+| 535 | System_Music_Artist | Large text
+| 536 | System_Photo_SaturationText | Text
+| 537 | System_Music_AlbumTitle | Text
+| 538 | System_Media_Year | Binary data
+| 539 | System_Music_TrackNumber | Binary data
+| 540 | System_Contact_HomeAddressCountry | Text
+| 541 | System_Music_Genre | Text
+| 542 | System_Media_AverageLevel | Binary data
+| 543 | System_Journal_Contacts | Text
+| 544 | System_Music_AlbumArtist | Large text
+| 545 | System_RecordedTV_EpisodeName | Text
+| 546 | System_RecordedTV_ProgramDescription | Large text
+| 547 | System_RecordedTV_StationCallSign | Text
+| 548 | System_Message_MessageClass | Text
+| 549 | System_SensitivityText | Text
+| 550 | System_Contact_IMAddress | Large text
+| 551 | System_RecordedTV_ChannelNumber | Binary data
+| 552 | System_Photo_WhiteBalanceText | Text
+| 553 | System_Calendar_OrganizerName | Large text
+| 554 | System_AcquisitionID | Integer 32-bit signed
+| 555 | System_RecordedTV_IsClosedCaptioningAvailable | Boolean
+| 556 | System_Photo_PhotometricInterpretationText | Text
+| 557 | System_RecordedTV_IsRepeatBroadcast | Boolean
+| 558 | System_RecordedTV_IsSAP | Boolean
+| 559 | System_RecordedTV_DateContentExpires | Binary data
+| 560 | System_Message_ToDoTitle | Text
+| 561 | System_IsShared | Boolean
+| 562 | System_DateCompleted | Binary data
+| 563 | System_RecordedTV_IsATSCContent | Boolean
+| 564 | System_RecordedTV_IsDTVContent | Boolean
+| 565 | System_RecordedTV_IsHDContent | Boolean
+| 566 | System_Music_ContentGroupDescription | Text
+| 567 | System_Music_InitialKey | Text
+| 568 | System_Music_BeatsPerMinute | Text
+| 569 | System_Music_Conductor | Large text
+| 570 | System_Calendar_RequiredAttendeeAddresses | Large text
+| 571 | System_Music_PartOfSet | Text
+| 572 | System_Media_SubTitle | Text
+| 573 | System_Music_Mood | Text
+| 574 | System_Note_Color | Binary data
+| 575 | System_Contact_JA_CompanyNamePhonetic | Large text
+| 576 | System_ComputerName | Text
+| 577 | System_Calendar_OptionalAttendeeNames | Large text
+| 578 | System_Contact_JA_FirstNamePhonetic | Text
+| 579 | System_Contact_Hobbies | Text
+| 580 | System_Contact_OtherAddressPostOfficeBox | Text
+| 581 | System_Contact_JA_LastNamePhonetic | Large text
+| 582 | System_ItemPathDisplayNarrow | Large text
+| 583 | System_RecordedTV_NetworkAffiliation | Text
+| 584 | System_Contact_TelexNumber | Text
+| 585 | System_Contact_OtherAddressCity | Text
+| 586 | System_Contact_Gender | Text
+| 587 | System_Photo_SharpnessText | Text
+| 588 | System_RatingText | Text
+| 589 | System_Photo_FlashFired | Boolean
+| 590 | System_Photo_DateTaken | Binary data +
+Contains big-endian filetime
+| 591 | System_Photo_ContrastText | Text
+| 592 | System_FileName | Large text
+| 593 | System_Photo_DigitalZoom | Floating point double precision (64-bit)
+| 594 | System_ParsingName | Large text
+| 595 | System_Software_DateLastUsed | Binary data
+| 596 | System_SFGAOFlags | Binary data
+| 597 | System_Contact_HomeAddressStreet | Text
+| 598 | System_Contact_PrimaryAddressStreet | Text
+| 599 | System_Contact_EmailAddress3 | Large text
+| 600 | System_Calendar_RequiredAttendeeNames | Large text
+| 601 | System_Calendar_Duration | Text
+| 602 | System_Contact_Children | Text
+| 603 | System_RecordedTV_RecordingTime | Binary data
+| 604 | Microsoft_IE_FeedItemLocalId | Large text
+| 605 | Microsoft_IE_SelectionCount | Binary data
+| 606 | Microsoft_IE_TargetUrl | Large text
+| 607 | Microsoft_IE_TargetUrlHostName | Large text
+| 608 | Microsoft_IE_TargetUrlPath | Large text
+| 609 | Microsoft_IE_Title | Large text
+| 610 | Microsoft_IE_VisitCount | Binary data
+|===
+
+==== Windows Vista Search
+Most of the binary values in the Windows Vista Search database are stored in 
+little-endian.
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | DocID | Integer 32-bit signed
+| 2 | `__SDID` | Integer 32-bit signed
+| 3 | System_Search_GatherTime | Binary data +
+Contains little-endian filetime
+| 4 | System_Search_Rank | Integer 32-bit signed
+| 5 | System_Size | Currency (64-bit) +
+Contains 64-bit little-endian integer value
+| 6 | System_FileAttributes | Integer 32-bit signed +
+See section: <<file_attribute_flags,File attribute flags>>
+| 7 | System_DateModified | Binary data +
+Contains little-endian filetime
+| 8 | System_DateCreated | Binary data
+Contains little-endian filetime
+| 9 | System_DateAccessed | Binary data +
+Contains little-endian filetime
+| 128 | System_ItemFolderNameDisplay | Binary data +
+Contains a compressed string
+| 129 | System_ItemTypeText | Binary data +
+Contains a compressed string
+| 130 | System_ItemType | Binary data +
+Contains a compressed string
+| 256 | System_Music_Conductor | Large binary data
+| 257 | System_Media_Year | Integer 32-bit signed
+| 258 | System_Media_Producer | Large binary data
+| 259 | System_Media_DateReleased | Binary data +
+Contains a compressed string
+| 260 | System_Photo_ContrastText | Binary data
+| 261 | System_Document_LineCount | Integer 32-bit signed
+| 262 | System_Message_BccAddress | Large binary data
+| 263 | System_Contact_PrimaryAddressStreet | Binary data
+| 264 | System_Sensitivity | Integer 16-bit signed
+| 265 | System_ItemFolderPathDisplayNarrow | Large binary data +
+Contains a compressed string
+| 266 | System_FlagStatusText | Binary data +
+Contains a compressed string
+| 267 | System_Music_PartOfSet | Binary data +
+Contains a compressed string
+| 268 | System_Media_Writer | Large binary data
+| 269 | System_Photo_WhiteBalanceText | Binary data
+| 270 | System_Photo_ExposureProgram | Integer 32-bit signed
+| 271 | System_Document_ParagraphCount | Integer 32-bit signed
+| 272 | System_Note_Color | Integer 16-bit signed
+| 273 | System_Message_BccName | Large binary data
+| 274 | System_Contact_BusinessAddressCity | Binary data
+| 275 | System_Calendar_Location | Binary data +
+Contains a compressed string
+| 276 | System_ItemName | Large binary data +
+Contains a compressed string
+| 277 | System_Link_TargetParsingPath | Large binary data +
+Contains a compressed string
+| 278 | System_Video_StreamName | Binary data
+| 279 | System_Music_TrackNumber | Integer 32-bit signed
+| 280 | System_Media_SubTitle | Binary data +
+Contains a compressed string
+| 281 | System_Media_CollectionGroupID | Binary data +
+Contains a compressed string
+| 282 | System_Photo_PhotometricInterpretationText | Binary data
+| 283 | System_Document_SlideCount | Integer 32-bit signed
+| 284 | System_Message_CcAddress | Large binary data +
+Contains a compressed string
+| 285 | System_Contact_HomeTelephone | Binary data
+| 286 | System_Contact_EmailAddress3 | Large binary data
+| 287 | System_Contact_CompanyMainTelephone | Binary data
+| 288 | System_Contact_BusinessAddressPostalCode | Binary data
+| 289 | System_Video_FrameWidth | Integer 32-bit signed
+| 290 | System_Music_Mood | Binary data
+| 291 | System_Media_CollectionID | Binary data +
+Contains a compressed string
+| 292 | System_Photo_DateTaken | Binary data +
+Contains little-endian filetime
+| 293 | System_Message_CcName | Large binary data
+| 294 | System_Contact_FileAsName | Large binary data
+| 295 | System_Calendar_Duration | Binary data
+| 296 | System_ItemParticipants | Large binary data +
+Contains a compressed string
+| 297 | System_Video_FrameHeight | Integer 32-bit signed
+| 298 | System_Media_ContentID | Binary data +
+Contains a compressed string
+| 299 | System_Photo_SaturationText | Binary data
+| 300 | System_Document_HiddenSlideCount | Integer 32-bit signed
+| 301 | System_Message_ToDoTitle | Binary data
+| 302 | System_OriginalFileName | Large binary data
+| 303 | System_ItemFolderPathDisplay | Large binary data +
+Contains a compressed string
+| 304 | System_FileOwner | Large binary data +
+Contains a compressed string
+| 305 | System_FileFRN | Currency (64-bit)
+| 306 | System_Media_CreatorApplication | Binary data
+| 307 | System_Contact_Children | Large binary data
+| 308 | System_ItemPathDisplay | Large binary data +
+Contains a compressed string
+| 309 | System_FileName | Large binary data +
+Contains a compressed string
+| 310 | System_EndDate | Binary data +
+Contains little-endian filetime
+| 311 | System_Video_FrameRate | Integer 32-bit signed
+| 312 | System_Music_Genre | Large binary data +
+Contains a compressed string
+| 313 | System_Media_CreatorApplicationVersion | Binary data
+| 314 | System_Media_AverageLevel | Integer 32-bit signed
+| 315 | System_Photo_SharpnessText | Binary data
+| 316 | System_Photo_ISOSpeed | Integer 16-bit signed
+| 317 | System_Image_Compression | Integer 16-bit signed
+| 318 | System_Contact_SpouseName | Large binary data
+| 319 | System_Contact_OtherAddressState | Binary data
+| 320 | System_Contact_HomeFaxNumber | Binary data
+| 321 | System_Contact_HomeAddressStreet | Binary data
+| 322 | System_Contact_BusinessAddressStreet | Binary data
+| 323 | System_Contact_Anniversary | Binary data
+| 324 | System_Calendar_RequiredAttendeeNames | Large binary data
+| 325 | System_MIMEType | Binary data +
+Contains a compressed string
+| 326 | System_Contact_PrimaryTelephone | Binary data
+| 327 | System_Communication_AccountName | Binary data
+| 328 | System_Link_TargetSFGAOFlags | Integer 32-bit signed
+| 329 | System_Video_EncodingBitrate | Integer 32-bit signed
+| 330 | System_Music_AlbumArtist | Large binary data +
+Contains a compressed string
+| 331 | System_Media_Publisher | Binary data +
+Contains a compressed string
+| 332 | System_Contact_FullName | Large binary data
+| 333 | System_Contact_FirstName | Large binary data
+| 334 | System_Contact_AssistantTelephone | Binary data
+| 335 | System_Calendar_ShowTimeAsText | Binary data +
+Contains a compressed string
+| 336 | System_Calendar_Resources | Large binary data
+| 337 | System_IsRead | Boolean
+| 338 | System_Search_AutoSummary | Large binary data +
+Contains a compressed string
+| 339 | System_Video_SampleSize | Integer 32-bit signed
+| 340 | System_Music_Period | Binary data
+| 341 | System_Document_Manager | Binary data
+| 342 | System_Journal_EntryType | Binary data
+| 343 | System_Contact_TelexNumber | Binary data
+| 344 | System_Contact_PrimaryAddressPostOfficeBox | Binary data
+| 345 | System_Contact_MailingAddress | Binary data
+| 346 | System_Contact_IMAddress | Large binary data
+| 347 | System_Contact_Gender | Binary data
+| 348 | System_Contact_BusinessAddressPostOfficeBox | Binary data
+| 349 | System_IsShared | Boolean
+| 350 | System_Importance | Integer 32-bit signed
+| 351 | System_Video_Compression | Binary data
+| 352 | System_Document_ClientID | Binary data
+| 353 | System_Task_Owner | Large binary data
+| 354 | System_Contact_EmailName | Large binary data
+| 355 | System_ParsingName | Large binary data +
+Contains a compressed string
+| 356 | System_FlagStatus | Integer 32-bit signed
+| 357 | System_Company | Binary data
+| 358 | System_Video_HorizontalAspectRatio | Integer 32-bit signed
+| 359 | System_Media_DateEncoded | Binary data +
+Contains little-endian filetime
+| 360 | System_Photo_ExposureTime | Floating point double precision (64-bit)
+| 361 | System_Message_MessageClass | Binary data +
+Contains a compressed string
+| 362 | System_Message_IsFwdOrReply | Integer 32-bit signed
+| 363 | System_Message_FromAddress | Large binary data +
+Contains a compressed string
+| 364 | System_Contact_OtherAddress | Binary data
+| 365 | System_Contact_AssistantName | Large binary data
+| 366 | System_SFGAOFlags | Integer 32-bit signed
+| 367 | System_Video_TotalBitrate | Integer 32-bit signed
+| 368 | System_RecordedTV_RecordingTime | Binary data +
+Contains little-endian filetime
+| 369 | System_Media_UserWebUrl | Large binary data
+| 370 | System_Photo_MeteringModeText | Binary data
+| 371 | System_Message_FromName | Large binary data +
+Contains a compressed string
+| 372 | System_Communication_TaskStatus | Integer 16-bit signed
+| 373 | System_ProviderItemID | Binary data
+| 374 | System_ItemDate | Binary data +
+Contains little-endian filetime
+| 375 | System_Video_FourCC | Integer 32-bit signed
+| 376 | System_Media_UniqueFileIdentifier | Binary data
+| 377 | System_Message_Store | Binary data +
+Contains a compressed string
+| 378 | System_Contact_PrimaryAddressPostal | Code Binary data
+| 379 | System_Title | Large binary data +
+Contains a compressed string
+| 380 | System_Video_VerticalAspectRatio | Integer 32-bit signed
+| 381 | System_RecordedTV_EpisodeName | Binary data +
+Contains a compressed string
+| 382 | System_Photo_FNumber | Floating point double precision (64-bit)
+| 383 | System_Message_ToAddress | Large binary data +
+Contains a compressed string
+| 384 | System_Message_SenderName | Large binary data +
+Contains a compressed string
+| 385 | System_Message_ConversationID | Binary data +
+Contains a compressed string +
+[yellow-background]*Can contain binary data*
+| 386 | System_Contact_OtherAddressPostalCode | Binary data
+| 387 | System_Contact_HomeAddressState | Binary data
+| 388 | System_Subject | Large binary data +
+Contains a compressed string
+| 389 | System_RecordedTV_ProgramDescription | Large binary data +
+Contains a compressed string
+| 390 | System_Audio_PeakValue | Integer 32-bit signed
+| 391 | System_Photo_Event | Large binary data
+| 392 | System_Document_DocumentID | Binary data
+| 393 | System_Message_ToName | Large binary data +
+Contains a compressed string
+| 394 | System_Message_ConversationIndex | Binary data
+| 395 | System_Contact_BusinessAddress | Binary data
+| 396 | System_RatingText | Binary data +
+Contains a compressed string
+| 397 | System_IsDeleted | Boolean
+| 398 | System_FlagColorText | Binary data
+| 399 | System_Author | Large binary data
+| 400 | System_Media_ProtectionType | Binary data
+| 401 | System_Image_HorizontalSize | Integer 32-bit signed
+| 402 | System_Task_CompletionStatus | Binary data
+| 403 | System_Contact_WebPage | Large binary data
+| 404 | System_Contact_TTYTDDTelephone | Binary data
+| 405 | System_Contact_HomeAddressCity | Binary data
+| 406 | System_Communication_TaskStatusText | Binary data
+| 407 | System_SharedWith | Large binary data
+| 408 | System_Keywords | Large binary data
+| 409 | System_RecordedTV_StationCallSign | Binary data
+| 410 | System_RecordedTV_OriginalBroadcastDate | Binary data
+| 411 | System_Media_ProviderRating | Binary data
+| 412 | System_Photo_ShutterSpeed | Floating point double precision (64-bit)
+| 413 | System_Photo_FlashText | Binary data
+| 414 | System_Image_VerticalSize | Integer 32-bit signed
+| 415 | System_Document_Division | Binary data
+| 416 | System_Message_SenderAddress | Large binary data +
+Contains a compressed string
+| 417 | System_Message_DateSent | Binary data +
+Contains little-endian filetime
+| 418 | System_Contact_OtherAddressCountry | Binary data
+| 419 | System_Contact_MobileTelephone | Binary data
+| 420 | System_Contact_HomeAddressCountry | Binary data
+| 421 | System_Calendar_ReminderTime | Binary data
+| 422 | System_PriorityText | Binary data
+| 423 | System_MileageInformation | Binary data
+| 424 | System_Comment | Large binary data +
+Contains a compressed string
+| 425 | System_Media_ProviderStyle | Binary data
+| 426 | System_Photo_CameraManufacturer | Binary data
+| 427 | System_Photo_Aperture | Floating point double precision (64-bit)
+| 428 | System_Image_HorizontalResolution | Floating point double precision (64-bit)
+| 429 | System_Message_DateReceived | Binary data +
+Contains little-endian filetime
+| 430 | System_Contact_OtherAddressCity | Binary data
+| 431 | System_Calendar_ShowTimeAs | Integer 16-bit signed
+| 432 | System_Rating | Integer 32-bit signed
+| 433 | System_Identity | Binary data +
+Contains a compressed string
+| 434 | System_DueDate | Binary data +
+Contains little-endian filetime
+| 435 | System_RecordedTV_ChannelNumber | Integer 32-bit signed
+| 436 | System_Media_UserNoAutoInfo | Binary data
+| 437 | System_Photo_ProgramModeText | Binary data
+| 438 | System_Photo_ExposureProgramText | Binary data
+| 439 | System_Photo_CameraModel | Binary data
+| 440 | System_Image_VerticalResolution | Floating point double precision (64-bit)
+| 441 | System_Document_LastAuthor | Large binary data
+| 442 | System_Message_AttachmentNames | Large binary data
+| 443 | System_Contact_JobTitle | Binary data
+| 444 | System_ThumbnailCacheId | Currency (64-bit)
+| 445 | System_Priority | Integer 16-bit signed
+| 446 | System_IsFlagged | Boolean
+| 447 | System_Image_BitDepth | Integer 32-bit signed
+| 448 | System_Document_RevisionNumber | Binary data
+| 449 | System_Contact_PrimaryAddressCity | Binary data
+| 450 | System_Contact_PersonalTitle | Binary data
+| 451 | System_Contact_OfficeLocation | Binary data
+| 452 | System_Contact_EmailAddresses | Large binary data
+| 453 | System_Contact_EmailAddress | Large binary data
+| 454 | System_Status | Binary data
+| 455 | System_Copyright | Binary data +
+Contains a compressed string
+| 456 | System_DRM_IsProtected | Boolean
+| 457 | System_Photo_Orientation | Integer 16-bit signed
+| 458 | System_Image_CompressionText | Binary data
+| 459 | System_Document_TotalEditingTime | Currency (64-bit)
+| 460 | System_Contact_OtherAddressStreet | Binary data
+| 461 | System_Contact_CarTelephone | Binary data
+| 462 | System_SoftwareUsed | Binary data
+| 463 | System_DateArchived | Binary data
+| 464 | System_ContentType | Binary data
+| 465 | System_Media_ClassPrimaryID | Binary data +
+Contains a compressed string
+| 466 | System_Document_DatePrinted | Binary data
+| 467 | System_Message_HasAttachments | Boolean
+| 468 | System_Contact_PagerTelephone | Binary data
+| 469 | System_Contact_MiddleName | Large binary data
+| 470 | System_Contact_Hobbies | Large binary data
+| 471 | System_IsFlaggedComplete | Boolean
+| 472 | System_ContentStatus | Binary data
+| 473 | System_ComputerName | Binary data +
+Contains a compressed string
+| 474 | System_Shell_OmitFromView | Binary data
+| 475 | System_Media_ClassSecondaryID | Binary data +
+Contains a compressed string
+| 476 | System_Photo_MeteringMode | Integer 16-bit signed
+| 477 | System_Document_DateCreated | Binary data +
+Contains little-endian filetime
+| 478 | System_Contact_JA_CompanyNamePhonetic | Large binary data
+| 479 | System_Contact_HomeAddressPostOfficeBox | Binary data
+| 480 | System_Contact_BusinessTelephone | Binary data
+| 481 | System_Contact_BusinessAddressCountry | Binary data
+| 482 | System_Language | Binary data
+| 483 | System_Kind | Large binary data +
+Contains a compressed string
+| 484 | System_RecordedTV_IsClosedCaptioningAvailable | Boolean
+| 485 | System_Media_DVDID | Binary data
+| 486 | System_Document_DateSaved | Binary data +
+Contains little-endian filetime
+| 487 | System_Contact_Suffix | Binary data
+| 488 | System_Contact_Profession | Binary data
+| 489 | System_Contact_Label | Binary data
+| 490 | System_Contact_JA_FirstNamePhonetic | Binary data
+| 491 | System_Calendar_OrganizerAddress | Large binary data
+| 492 | System_Calendar_OptionalAttendeeNames | Large binary data
+| 493 | System_SourceItem | Binary data
+| 494 | System_ItemNamePrefix | Large binary data +
+Contains a compressed string
+| 495 | System_ItemNameDisplay | Large binary data +
+Contains a compressed string
+| 496 | System_RecordedTV_IsRepeatBroadcast | Boolean
+| 497 | System_Media_MCDI | Binary data +
+Contains a compressed string
+| 498 | System_Media_FrameCount | Integer 32-bit signed
+| 499 | System_Media_Duration | Currency (64-bit)
+| 500 | System_Photo_Flash | Integer 8-bit unsigned
+| 501 | System_Document_PageCount | Integer 32-bit signed
+| 502 | System_Journal_Contacts | Large binary data
+| 503 | System_Contact_OtherAddressPostOfficeBox | Binary data
+| 504 | System_Contact_NickName | Large binary data
+| 505 | System_Contact_JA_LastNamePhonetic | Large binary data
+| 506 | System_Contact_BusinessFaxNumber | Binary data
+| 507 | System_Calendar_IsRecurring | Boolean
+| 508 | System_ItemPathDisplayNarrow | Large binary data +
+Contains a compressed string
+| 509 | System_ItemAuthors | Large binary data +
+Contains a compressed string
+| 510 | System_DateImported | Binary data +
+Contains little-endian filetime
+| 511 | System_DateAcquired | Binary data +
+Contains little-endian filetime
+| 512 | System_Search_Store | Binary data +
+Contains a compressed string
+| 513 | System_RecordedTV_IsSAP | Boolean
+| 514 | System_Media_MetadataContentProvider | Binary data
+| 515 | System_Audio_EncodingBitrate | Integer 32-bit signed
+| 516 | System_Photo_FocalLength | Floating point double precision (64-bit)
+| 517 | System_Image_Dimensions | Binary data +
+Contains a compressed string
+| 518 | System_GPS_Date | Binary data
+| 519 | System_Document_WordCount | Integer 32-bit signed
+| 520 | System_Contact_HomeAddressPostalCode | Binary data
+| 521 | System_Calendar_OptionalAttendeeAddresses | Large binary data
+| 522 | System_Calendar_IsOnline | Boolean
+| 523 | System_Software_DateLastUsed | Binary data
+| 524 | System_RecordedTV_StationName | Binary data
+| 525 | System_RecordedTV_DateContentExpires | Binary data
+| 526 | System_Media_ContentDistributor | Binary data
+| 527 | System_Audio_SampleRate | Integer 32-bit signed
+| 528 | System_Document_CharacterCount | Integer 32-bit signed
+| 529 | System_Contact_HomeAddress | Binary data
+| 530 | System_Contact_EmailAddress2 | Large binary data
+| 531 | System_Contact_BusinessAddressState | Binary data
+| 532 | System_StartDate | Binary data
+| 533 | System_SensitivityText | Binary data
+| 534 | System_ParentalRatingReason | Binary data
+| 535 | System_IsIncomplete | Boolean
+| 536 | System_FileExtension | Binary data +
+Contains a compressed string
+| 537 | System_RecordedTV_IsATSCContent | Boolean
+| 538 | System_Music_ContentGroupDescription | Binary data
+| 539 | System_Music_Composer | Large binary data +
+Contains a compressed string
+| 540 | System_Music_Artist | Large binary data +
+Contains a compressed string
+| 541 | System_Audio_SampleSize | Integer 32-bit signed
+| 542 | System_Contact_CallbackTelephone | Binary data
+| 543 | System_Calendar_OrganizerName | Large binary data
+| 544 | System_Project | Binary data
+| 545 | System_IsAttachment | Boolean
+| 546 | System_ImportanceText | Binary data +
+Contains a compressed string
+| 547 | System_DateCompleted | Binary data
+| 548 | System_Category | Large binary data
+| 549 | System_Video_Director | Large binary data
+| 550 | System_RecordedTV_IsDTVContent | Boolean
+| 551 | System_Music_InitialKey | Binary data
+| 552 | System_Media_SubscriptionContentId | Binary data
+| 553 | System_Audio_ChannelCount | Integer 32-bit signed
+| 554 | System_Document_PresentationFormat | Binary data
+| 555 | System_Document_Contributor | Large binary data
+| 556 | System_Note_ColorText | Binary data
+| 557 | System_Contact_PrimaryAddressState | Binary data
+| 558 | System_Contact_Department | Binary data
+| 559 | System_Contact_Birthday | Binary data
+| 560 | System_Calendar_RequiredAttendeeAddresses | Large binary data
+| 561 | System_KindText | Binary data +
+Contains a compressed string
+| 562 | System_ItemUrl | Large binary data +
+Contains a compressed string +
+[yellow-background]*URL can contain binary values*
+| 563 | System_ApplicationName | Binary data
+| 564 | System_RecordedTV_IsHDContent | Boolean
+| 565 | System_Music_BeatsPerMinute | Binary data
+| 566 | System_Music_AlbumTitle | Binary data +
+Contains a compressed string
+| 567 | System_Photo_OrientationText | Binary data
+| 568 | System_Photo_GainControlText | Binary data
+| 569 | System_Document_ByteCount | Integer 32-bit signed
+| 570 | System_Contact_PrimaryEmailAddress | Large binary data
+| 571 | System_Contact_PrimaryAddressCountry | Binary data
+| 572 | System_Contact_LastName | Large binary data
+| 573 | System_Contact_BusinessHomePage | Binary data
+| 574 | System_ParentalRating | Binary data
+| 575 | System_FlagColor | Integer 16-bit signed
+| 576 | System_AcquisitionID | Integer 32-bit signed
+|===
+
+==== Windows 7 Search
+
+*TODO: migrate remaining documentation.*
+
+=== SystemIndex_0P
+
+*TODO: migrate remaining documentation.*
+
+=== SystemIndex_1_DATA_#
+Where # is a numeric value.
+
+==== Windows 8 Search
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | Partition | Integer 32-bit unsigned 
+| 2 | PID | Integer 16-bit unsigned 
+| 3 | WidStart | Integer 32-bit unsigned 
+| 256 | szKey | Large binary data 
+| 257 | Data | Large binary data 
+|===
+
+=== SystemIndex_1_OCC_#
+Where # is a numeric value.
+
+==== Windows 8 Search
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | OccID | Integer 32-bit unsigned 
+| 256 | OccPage | Large binary data 
+|===
+
+== Shadow tables
+The Window Vista Search database contains copies of tables. These copies are 
+referred to as shadow tables.
+
+[cols="1,1",options="header"]
+|===
+| Shadow table | Copy of table
+| SystemIndex_Gthr_S | SystemIndex_Gthr
+| SystemIndex_GthrPth_S | SystemIndex_GthrPth
+| SystemIndex_MaxDoc_S | SystemIndex_MaxDoc
+| SystemIndex_DeletedDocIds_S | SystemIndex_DeletedDocIds
+|===
+
+== String compression
+Within the Windows Vista Search database most text data is stored in binary 
+data containing compressed text. In Windows XP and 7 Search only a few strings 
+are stored in this manner.
+
+Part of the compression method is the following obfuscation method.
+....
+bitmask32  = 0x05000113;
+
+bitmask32 ^= (uint32_t) encoded_data_size;
+
+for( encoded_data_iterator = 0;
+     encoded_data_iterator < encoded_data_size;
+     encoded_data_iterator++ )
+{
+    switch( encoded_data_iterator & 0x03 )
+    {
+        case 3:
+        bitmask = (uint8_t) ( ( bitmask32 >> 24 ) & 0xff );
+        break;
+
+        case 2:
+        bitmask = (uint8_t) ( ( bitmask32 >> 16 ) & 0xff );
+        break;
+
+        case 1:
+        bitmask = (uint8_t) ( ( bitmask32 >> 8 ) & 0xff );
+        break;
+
+        default:
+        bitmask = (uint8_t) ( bitmask32 & 0xff );
+        break;
+    }
+    bitmask ^= encoded_data_iterator;
+
+    data[ data_iterator++ ] = encoded_data[ encoded_data_iterator ]
+                            ^ bitmask;
+}
+....
+
+The initial bitmask (bitmask32) is created by a 32-bit XOR of the values in the SID:
+....
+S-1-5-12
+....
+
+Which is stored as the following byte values:
+....
+01 01 00 00 00 00 00 05 12 00 00 00
+....
+
+The first byte of the decoded data contains a compression type byte. The 
+compression type is a can be a combination of multiple types.
+
+[cols="1,5",options="header"]
+|===
+| Value | Description
+| 0x00 | Run-length compressed UTF-16 little-endian string
+| 0x01 | 8-bit compressed UTF-16 little-endian string
+| 0x02 | Byte index-based run-length compressed UTF-16 little-endian string
+| 0x03 | Byte index-based 8-bit compressed UTF-16 little-endian string
+| 0x04 | Uncompressed data
+| | 
+| 0x06 | Byte index-based run-length compressed “uncompressed” data
+| | 
+| [yellow-background]*0x08* | [yellow-background]*Unknown*
+|===
+
+=== Run-length compressed UTF-16 little-endian string
+For the compressed data:
+
+1. read the byte containing the 'compression size'
+2. read the 'compressed byte'
+3. for the 'compression size' greater than 0
+  1. read a byte from the compressed data and add it to the uncompressed data
+  2. add the 'compressed byte' to the uncompressed data
+
+=== 8-bit compressed UTF16 little-endian string
+For the compressed data:
+
+1. read a byte from the compressed data and set it in the uncompressed data
+2. set a zero byte in the uncompressed data
+
+[NOTE]
+The string seems to be using a codepage, although the decompression algorithm 
+doesn't seems to provide compensation for this.
+
+=== Byte index-based compressed data
+The data is stored compressed if the compressed data is smaller than the 
+uncompressed data.
+
+[cols="1,1,1,5",options="header"]
+|===
+| Offset | Size | Value | Description
+| 0 | 2 | | The uncompressed data size
+| 2 | 256 | | The byte index table
+| 258 | ...  | | The compressed data
+|===
+
+1. Build a compression value table based on the byte index table
+2. Decompress the compressed data using the compression value table
+  1. if the compression value is compressed
+    1. determine the compression offset
+    2. determine the compression size, similar to DIRECT2
+    3. copy a part of the uncompressed buffer, similar to LZ77
+    2. otherwise use the byte value
+
+[NOTE]
+The string seems to be using a codepage for the 8-bit value, although the 
+decompression algorithm doesn't seems to provide compensation for this.
+
+==== Byte index-based run-length compressed UTF-16 little-endian string
+The byte index-based compressed data contains a run-length compressed UTF-16 
+little-endian string.
+
+[NOTE]
+Some strings seem to be cut short.
+
+==== Byte index-based 8-bit compressed UTF-16 little-endian string
+The byte index-based compressed data contains a 8-bit compressed UTF-16 
+little-endian string.
+
+== Windows definitions
+=== [[file_attribute_flags]]File attribute flags
+The file attribute flags consist of the following values:
+
+[cols="1,1,5",options="header"]
+|===
+| Value | Identifier | Description
+| 0x00000001 | FILE_ATTRIBUTE_READONLY | Is read-Only
+| 0x00000002 | FILE_ATTRIBUTE_HIDDEN | Is hidden
+| 0x00000004 | FILE_ATTRIBUTE_SYSTEM | Is a system file or directory
+| 0x00000008 | | Reserved +
+[yellow-background]*Is a volume label*
+| 0x00000010 | FILE_ATTRIBUTE_DIRECTORY | Is a directory
+| 0x00000020 | FILE_ATTRIBUTE_ARCHIVE | Should be archived
+| 0x00000040 | FILE_ATTRIBUTE_DEVICE | Reserved +
+Is a device
+| 0x00000080 | FILE_ATTRIBUTE_NORMAL | Is normal +
+None of the other flags should be set
+| 0x00000100 | FILE_ATTRIBUTE_TEMPORARY | Is temporary
+| 0x00000200 | FILE_ATTRIBUTE_SPARSE_FILE | Is a sparse file
+| 0x00000400 | FILE_ATTRIBUTE_REPARSE_POINT | Is a reparse point or symbolic link
+| 0x00000800 | FILE_ATTRIBUTE_COMPRESSED | Is compressed
+| 0x00001000 | FILE_ATTRIBUTE_OFFLINE | Is offline +
+The data of the file is stored on an offline storage.
+| 0x00002000 | FILE_ATTRIBUTE_NOT_CONTENT_INDEXED | Do not index content +
+The content of the file or directory should not be indexed by the indexing service.
+| 0x00004000 | FILE_ATTRIBUTE_ENCRYPTED | Is encrypted
+| 0x00008000 | | [yellow-background]*Unknown (seen on Windows 95 FAT)*
+| 0x00010000 | FILE_ATTRIBUTE_VIRTUAL | Currently reserved for future use, not used by the LNK format +
+Is virtual
+|===
+
+:numbered!:
+[appendix]
+== References
+
+`[DOUGLAS09]`
+
+[cols="1,5",options="header"]
+|===
+| Title: | Forensic Artefacts Present in Microsoft Windows Desktop Search
+| Author(s): | John Douglas
+| Date: | February 2009
+|===
+
+`[LIBESEDB09]`
+
+[cols="1,5",options="header"]
+|===
+| Title: | Extensible Storage Engine (ESE) Database File (EDB) format
+| Author(s): | Joachim Metz
+| Date: | September 2009
+| URL: | https://googledrive.com/host/0B3fBvzttpiiSN082cmxsbHB0anc/Extensible%20Storage%20Engine%20(ESE)%20Database%20File%20(EDB)%20format.pdf
+|===
+
+[appendix]
+== GNU Free Documentation License
+Version 1.3, 3 November 2008
+Copyright © 2000, 2001, 2002, 2007, 2008 Free Software Foundation, Inc. 
+<http://fsf.org/>
+
+Everyone is permitted to copy and distribute verbatim copies of this license 
+document, but changing it is not allowed.
+
+=== 0. PREAMBLE
+The purpose of this License is to make a manual, textbook, or other functional 
+and useful document "free" in the sense of freedom: to assure everyone the 
+effective freedom to copy and redistribute it, with or without modifying it, 
+either commercially or noncommercially. Secondarily, this License preserves for 
+the author and publisher a way to get credit for their work, while not being 
+considered responsible for modifications made by others.
+
+This License is a kind of "copyleft", which means that derivative works of the 
+document must themselves be free in the same sense. It complements the GNU 
+General Public License, which is a copyleft license designed for free software.
+
+We have designed this License in order to use it for manuals for free software, 
+because free software needs free documentation: a free program should come with 
+manuals providing the same freedoms that the software does. But this License is 
+not limited to software manuals; it can be used for any textual work, 
+regardless of subject matter or whether it is published as a printed book. We 
+recommend this License principally for works whose purpose is instruction or 
+reference.
+
+=== 1. APPLICABILITY AND DEFINITIONS
+This License applies to any manual or other work, in any medium, that contains 
+a notice placed by the copyright holder saying it can be distributed under the 
+terms of this License. Such a notice grants a world-wide, royalty-free license, 
+unlimited in duration, to use that work under the conditions stated herein. The 
+"Document", below, refers to any such manual or work. Any member of the public 
+is a licensee, and is addressed as "you". You accept the license if you copy, 
+modify or distribute the work in a way requiring permission under copyright law.
+
+A "Modified Version" of the Document means any work containing the Document or 
+a portion of it, either copied verbatim, or with modifications and/or 
+translated into another language.
+
+A "Secondary Section" is a named appendix or a front-matter section of the 
+Document that deals exclusively with the relationship of the publishers or 
+authors of the Document to the Document's overall subject (or to related 
+matters) and contains nothing that could fall directly within that overall 
+subject. (Thus, if the Document is in part a textbook of mathematics, a 
+Secondary Section may not explain any mathematics.) The relationship could be a 
+matter of historical connection with the subject or with related matters, or of 
+legal, commercial, philosophical, ethical or political position regarding them.
+
+The "Invariant Sections" are certain Secondary Sections whose titles are 
+designated, as being those of Invariant Sections, in the notice that says that 
+the Document is released under this License. If a section does not fit the 
+above definition of Secondary then it is not allowed to be designated as 
+Invariant. The Document may contain zero Invariant Sections. If the Document 
+does not identify any Invariant Sections then there are none.
+
+The "Cover Texts" are certain short passages of text that are listed, as 
+Front-Cover Texts or Back-Cover Texts, in the notice that says that the 
+Document is released under this License. A Front-Cover Text may be at most 5 
+words, and a Back-Cover Text may be at most 25 words.
+
+A "Transparent" copy of the Document means a machine-readable copy, represented 
+in a format whose specification is available to the general public, that is 
+suitable for revising the document straightforwardly with generic text editors 
+or (for images composed of pixels) generic paint programs or (for drawings) 
+some widely available drawing editor, and that is suitable for input to text 
+formatters or for automatic translation to a variety of formats suitable for 
+input to text formatters. A copy made in an otherwise Transparent file format 
+whose markup, or absence of markup, has been arranged to thwart or discourage 
+subsequent modification by readers is not Transparent. An image format is not 
+Transparent if used for any substantial amount of text. A copy that is not 
+"Transparent" is called "Opaque".
+
+Examples of suitable formats for Transparent copies include plain ASCII without 
+markup, Texinfo input format, LaTeX input format, SGML or XML using a publicly 
+available DTD, and standard-conforming simple HTML, PostScript or PDF designed 
+for human modification. Examples of transparent image formats include PNG, XCF 
+and JPG. Opaque formats include proprietary formats that can be read and edited 
+only by proprietary word processors, SGML or XML for which the DTD and/or 
+processing tools are not generally available, and the machine-generated HTML, 
+PostScript or PDF produced by some word processors for output purposes only.
+
+The "Title Page" means, for a printed book, the title page itself, plus such 
+following pages as are needed to hold, legibly, the material this License 
+requires to appear in the title page. For works in formats which do not have 
+any title page as such, "Title Page" means the text near the most prominent 
+appearance of the work's title, preceding the beginning of the body of the text.
+
+The "publisher" means any person or entity that distributes copies of the 
+Document to the public.
+
+A section "Entitled XYZ" means a named subunit of the Document whose title 
+either is precisely XYZ or contains XYZ in parentheses following text that 
+translates XYZ in another language. (Here XYZ stands for a specific section 
+name mentioned below, such as "Acknowledgements", "Dedications", 
+"Endorsements", or "History".) To "Preserve the Title" of such a section when 
+you modify the Document means that it remains a section "Entitled XYZ" 
+according to this definition.
+
+The Document may include Warranty Disclaimers next to the notice which states 
+that this License applies to the Document. These Warranty Disclaimers are 
+considered to be included by reference in this License, but only as regards 
+disclaiming warranties: any other implication that these Warranty Disclaimers 
+may have is void and has no effect on the meaning of this License.
+
+=== 2. VERBATIM COPYING
+You may copy and distribute the Document in any medium, either commercially or 
+noncommercially, provided that this License, the copyright notices, and the 
+license notice saying this License applies to the Document are reproduced in 
+all copies, and that you add no other conditions whatsoever to those of this 
+License. You may not use technical measures to obstruct or control the reading 
+or further copying of the copies you make or distribute. However, you may 
+accept compensation in exchange for copies. If you distribute a large enough 
+number of copies you must also follow the conditions in section 3.
+
+You may also lend copies, under the same conditions stated above, and you may 
+publicly display copies.
+
+=== 3. COPYING IN QUANTITY
+If you publish printed copies (or copies in media that commonly have printed 
+covers) of the Document, numbering more than 100, and the Document's license 
+notice requires Cover Texts, you must enclose the copies in covers that carry, 
+clearly and legibly, all these Cover Texts: Front-Cover Texts on the front 
+cover, and Back-Cover Texts on the back cover. Both covers must also clearly 
+and legibly identify you as the publisher of these copies. The front cover must 
+present the full title with all words of the title equally prominent and 
+visible. You may add other material on the covers in addition. Copying with 
+changes limited to the covers, as long as they preserve the title of the 
+Document and satisfy these conditions, can be treated as verbatim copying in 
+other respects.
+
+If the required texts for either cover are too voluminous to fit legibly, you 
+should put the first ones listed (as many as fit reasonably) on the actual 
+cover, and continue the rest onto adjacent pages.
+
+If you publish or distribute Opaque copies of the Document numbering more than 
+100, you must either include a machine-readable Transparent copy along with 
+each Opaque copy, or state in or with each Opaque copy a computer-network 
+location from which the general network-using public has access to download 
+using public-standard network protocols a complete Transparent copy of the 
+Document, free of added material. If you use the latter option, you must take 
+reasonably prudent steps, when you begin distribution of Opaque copies in 
+quantity, to ensure that this Transparent copy will remain thus accessible at 
+the stated location until at least one year after the last time you distribute 
+an Opaque copy (directly or through your agents or retailers) of that edition 
+to the public.
+
+It is requested, but not required, that you contact the authors of the Document 
+well before redistributing any large number of copies, to give them a chance to 
+provide you with an updated version of the Document.
+
+=== 4. MODIFICATIONS
+You may copy and distribute a Modified Version of the Document under the 
+conditions of sections 2 and 3 above, provided that you release the Modified 
+Version under precisely this License, with the Modified Version filling the 
+role of the Document, thus licensing distribution and modification of the 
+Modified Version to whoever possesses a copy of it. In addition, you must do 
+these things in the Modified Version:
+
+A. Use in the Title Page (and on the covers, if any) a title distinct from that 
+of the Document, and from those of previous versions (which should, if there 
+were any, be listed in the History section of the Document). You may use the 
+same title as a previous version if the original publisher of that version 
+gives permission. 
+
+B. List on the Title Page, as authors, one or more persons or entities 
+responsible for authorship of the modifications in the Modified Version, 
+together with at least five of the principal authors of the Document (all of 
+its principal authors, if it has fewer than five), unless they release you from 
+this requirement. 
+
+C. State on the Title page the name of the publisher of the Modified Version, 
+as the publisher. 
+
+D. Preserve all the copyright notices of the Document. 
+
+E. Add an appropriate copyright notice for your modifications adjacent to the 
+other copyright notices. 
+
+F. Include, immediately after the copyright notices, a license notice giving 
+the public permission to use the Modified Version under the terms of this 
+License, in the form shown in the Addendum below. 
+
+G. Preserve in that license notice the full lists of Invariant Sections and 
+required Cover Texts given in the Document's license notice. 
+
+H. Include an unaltered copy of this License. 
+
+I. Preserve the section Entitled "History", Preserve its Title, and add to it 
+an item stating at least the title, year, new authors, and publisher of the 
+Modified Version as given on the Title Page. If there is no section Entitled 
+"History" in the Document, create one stating the title, year, authors, and 
+publisher of the Document as given on its Title Page, then add an item 
+describing the Modified Version as stated in the previous sentence. 
+
+J. Preserve the network location, if any, given in the Document for public 
+access to a Transparent copy of the Document, and likewise the network 
+locations given in the Document for previous versions it was based on. These 
+may be placed in the "History" section. You may omit a network location for a 
+work that was published at least four years before the Document itself, or if 
+the original publisher of the version it refers to gives permission. 
+
+K. For any section Entitled "Acknowledgements" or "Dedications", Preserve the 
+Title of the section, and preserve in the section all the substance and tone of 
+each of the contributor acknowledgements and/or dedications given therein. 
+
+L. Preserve all the Invariant Sections of the Document, unaltered in their text 
+and in their titles. Section numbers or the equivalent are not considered part 
+of the section titles. 
+
+M. Delete any section Entitled "Endorsements". Such a section may not be 
+included in the Modified Version. 
+
+N. Do not retitle any existing section to be Entitled "Endorsements" or to 
+conflict in title with any Invariant Section. 
+
+O. Preserve any Warranty Disclaimers. 
+
+If the Modified Version includes new front-matter sections or appendices that 
+qualify as Secondary Sections and contain no material copied from the Document, 
+you may at your option designate some or all of these sections as invariant. To 
+do this, add their titles to the list of Invariant Sections in the Modified 
+Version's license notice. These titles must be distinct from any other section 
+titles.
+
+You may add a section Entitled "Endorsements", provided it contains nothing but 
+endorsements of your Modified Version by various parties—for example, 
+statements of peer review or that the text has been approved by an organization 
+as the authoritative definition of a standard.
+
+You may add a passage of up to five words as a Front-Cover Text, and a passage 
+of up to 25 words as a Back-Cover Text, to the end of the list of Cover Texts 
+in the Modified Version. Only one passage of Front-Cover Text and one of 
+Back-Cover Text may be added by (or through arrangements made by) any one 
+entity. If the Document already includes a cover text for the same cover, 
+previously added by you or by arrangement made by the same entity you are 
+acting on behalf of, you may not add another; but you may replace the old one, 
+on explicit permission from the previous publisher that added the old one.
+
+The author(s) and publisher(s) of the Document do not by this License give 
+permission to use their names for publicity for or to assert or imply 
+endorsement of any Modified Version.
+
+=== 5. COMBINING DOCUMENTS
+You may combine the Document with other documents released under this License, 
+under the terms defined in section 4 above for modified versions, provided that 
+you include in the combination all of the Invariant Sections of all of the 
+original documents, unmodified, and list them all as Invariant Sections of your 
+combined work in its license notice, and that you preserve all their Warranty 
+Disclaimers.
+
+The combined work need only contain one copy of this License, and multiple 
+identical Invariant Sections may be replaced with a single copy. If there are 
+multiple Invariant Sections with the same name but different contents, make the 
+title of each such section unique by adding at the end of it, in parentheses, 
+the name of the original author or publisher of that section if known, or else 
+a unique number. Make the same adjustment to the section titles in the list of 
+Invariant Sections in the license notice of the combined work.
+
+In the combination, you must combine any sections Entitled "History" in the 
+various original documents, forming one section Entitled "History"; likewise 
+combine any sections Entitled "Acknowledgements", and any sections Entitled 
+"Dedications". You must delete all sections Entitled "Endorsements".
+
+=== 6. COLLECTIONS OF DOCUMENTS
+You may make a collection consisting of the Document and other documents 
+released under this License, and replace the individual copies of this License 
+in the various documents with a single copy that is included in the collection, 
+provided that you follow the rules of this License for verbatim copying of each 
+of the documents in all other respects.
+
+You may extract a single document from such a collection, and distribute it 
+individually under this License, provided you insert a copy of this License 
+into the extracted document, and follow this License in all other respects 
+regarding verbatim copying of that document.
+
+=== 7. AGGREGATION WITH INDEPENDENT WORKS
+A compilation of the Document or its derivatives with other separate and 
+independent documents or works, in or on a volume of a storage or distribution 
+medium, is called an "aggregate" if the copyright resulting from the 
+compilation is not used to limit the legal rights of the compilation's users 
+beyond what the individual works permit. When the Document is included in an 
+aggregate, this License does not apply to the other works in the aggregate 
+which are not themselves derivative works of the Document.
+
+If the Cover Text requirement of section 3 is applicable to these copies of the 
+Document, then if the Document is less than one half of the entire aggregate, 
+the Document's Cover Texts may be placed on covers that bracket the Document 
+within the aggregate, or the electronic equivalent of covers if the Document is 
+in electronic form. Otherwise they must appear on printed covers that bracket 
+the whole aggregate.
+
+=== 8. TRANSLATION
+Translation is considered a kind of modification, so you may distribute 
+translations of the Document under the terms of section 4. Replacing Invariant 
+Sections with translations requires special permission from their copyright 
+holders, but you may include translations of some or all Invariant Sections in 
+addition to the original versions of these Invariant Sections. You may include 
+a translation of this License, and all the license notices in the Document, and 
+any Warranty Disclaimers, provided that you also include the original English 
+version of this License and the original versions of those notices and 
+disclaimers. In case of a disagreement between the translation and the original 
+version of this License or a notice or disclaimer, the original version will 
+prevail.
+
+If a section in the Document is Entitled "Acknowledgements", "Dedications", or 
+"History", the requirement (section 4) to Preserve its Title (section 1) will 
+typically require changing the actual title.
+
+=== 9. TERMINATION
+You may not copy, modify, sublicense, or distribute the Document except as 
+expressly provided under this License. Any attempt otherwise to copy, modify, 
+sublicense, or distribute it is void, and will automatically terminate your 
+rights under this License.
+
+However, if you cease all violation of this License, then your license from a 
+particular copyright holder is reinstated (a) provisionally, unless and until 
+the copyright holder explicitly and finally terminates your license, and (b) 
+permanently, if the copyright holder fails to notify you of the violation by 
+some reasonable means prior to 60 days after the cessation.
+
+Moreover, your license from a particular copyright holder is reinstated 
+permanently if the copyright holder notifies you of the violation by some 
+reasonable means, this is the first time you have received notice of violation 
+of this License (for any work) from that copyright holder, and you cure the 
+violation prior to 30 days after your receipt of the notice.
+
+Termination of your rights under this section does not terminate the licenses 
+of parties who have received copies or rights from you under this License. If 
+your rights have been terminated and not permanently reinstated, receipt of a 
+copy of some or all of the same material does not give you any rights to use it.
+
+=== 10. FUTURE REVISIONS OF THIS LICENSE
+The Free Software Foundation may publish new, revised versions of the GNU Free 
+Documentation License from time to time. Such new versions will be similar in 
+spirit to the present version, but may differ in detail to address new problems 
+or concerns. See http://www.gnu.org/copyleft/.
+
+Each version of the License is given a distinguishing version number. If the 
+Document specifies that a particular numbered version of this License "or any 
+later version" applies to it, you have the option of following the terms and 
+conditions either of that specified version or of any later version that has 
+been published (not as a draft) by the Free Software Foundation. If the 
+Document does not specify a version number of this License, you may choose any 
+version ever published (not as a draft) by the Free Software Foundation. If the 
+Document specifies that a proxy can decide which future versions of this 
+License can be used, that proxy's public statement of acceptance of a version 
+permanently authorizes you to choose that version for the Document.
+
+=== 11. RELICENSING
+"Massive Multiauthor Collaboration Site" (or "MMC Site") means any World Wide 
+Web server that publishes copyrightable works and also provides prominent 
+facilities for anybody to edit those works. A public wiki that anybody can edit 
+is an example of such a server. A "Massive Multiauthor Collaboration" (or 
+"MMC") contained in the site means any set of copyrightable works thus 
+published on the MMC site.
+
+"CC-BY-SA" means the Creative Commons Attribution-Share Alike 3.0 license 
+published by Creative Commons Corporation, a not-for-profit corporation with a 
+principal place of business in San Francisco, California, as well as future 
+copyleft versions of that license published by that same organization.
+
+"Incorporate" means to publish or republish a Document, in whole or in part, as 
+part of another Document.
+
+An MMC is "eligible for relicensing" if it is licensed under this License, and 
+if all works that were first published under this License somewhere other than 
+this MMC, and subsequently incorporated in whole or in part into the MMC, (1) 
+had no cover texts or invariant sections, and (2) were thus incorporated prior 
+to November 1, 2008.
+
+The operator of an MMC Site may republish an MMC contained in the site under 
+CC-BY-SA on the same site at any time before August 1, 2009, provided the MMC 
+is eligible for relicensing.
+
