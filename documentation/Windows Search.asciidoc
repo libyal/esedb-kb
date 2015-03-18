@@ -992,10 +992,472 @@ Contains a compressed string
 |===
 
 ==== Windows 7 Search
+Most of the binary values in the Windows 7 Search database are stored in 
+big-endian.
 
-*TODO: migrate remaining documentation.*
+Some of the 64-bit binary values can contain '********' instead of a 'valid' 
+value.
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | DocID | Integer 32-bit signed
+| 2 | System_Search_Rank | Integer 32-bit signed
+| 3 | System_Search_GatherTime | Binary data +
+Contains big-endian filetime
+| 4 | System_Search_Rank | Integer 32-bit signed
+| 5 | System_Size | Currency (64-bit) +
+Contains 64-bit big-endian integer value
+| 6 | System_FileAttributes | Integer 32-bit unsigned
+See section: <<file_attribute_flags,File attribute flags>>
+| 7 | System_DateModified | Binary data _
+Contains big-endian filetime
+| 8 | System_DateCreated | Binary data +
+Contains big-endian filetime
+| 9 | System_DateAccessed | Binary data +
+Contains big-endian filetime
+| 256 | System_Null | Large binary data +
+Contains a compressed string
+| 257 | Microsoft_IE_TargetUrlPath | Large text
+| 258 | System_Photo_GainControlText | Large text
+| 259 | System_Contact_BusinessHomePage | Large text
+| 260 | Microsoft_IE_Title | Large text
+| 261 | System_IsIncomplete | Boolean
+| 262 | Microsoft_IE_VisitCount | Integer 32-bit unsigned
+| 263 | System_SDID | Integer 32-bit unsigned
+| 264 | System_DRM_IsProtected | Boolean
+| 265 | System_Contact_SpouseName | Large text
+| 266 | System_DateAcquired | Binary data
+| 267 | System_IsFolder | Boolean
+| 268 | System_Message_BccAddress | Large text
+| 269 | System_MIMEType | Large text
+| 270 | System_IsDeleted | Boolean
+| 271 | System_Message_BccName | Large text
+| 272 | System_Message_CcAddress | Large text
+| 273 | System_Document_Contributor | Large text
+| 274 | System_Search_HitCount | Integer 32-bit signed
+| 275 | System_Message_CcName | Large text
+| 276 | System_Search_AccessCount | Integer 32-bit unsigned
+| 277 | System_ItemFolderPathDisplay | Large text
+| 278 | System_Contact_EmailAddress2 | Large text
+| 279 | System_ItemPathDisplay | Large text
+| 280 | System_Search_LastIndexedTotalTime | Floating point double precision (64-bit)
+| 281 | System_Search_ReverseFileName | Large text
+| 282 | System_Communication_AccountName | Large text
+| 283 | System_ItemUrl | Large text
+| 284 | System_IsRead | Boolean
+| 285 | System_Importance | Integer 32-bit signed
+| 286 | System_ContentUrl | Large text
+| 287 | System_Contact_JobTitle | Large text
+| 288 | System_ItemParticipants | Large text
+| 289 | System_FlagStatus | Integer 32-bit signed
+| 290 | System_Contact_OfficeLocation | Large text
+| 291 | System_Message_FromAddress | Large text
+| 292 | System_Message_FromName | Large text
+| 293 | System_Music_AlbumID | Large text
+| 294 | System_Message_Store | Large text
+| 295 | System_Message_ToAddress | Large text
+| 296 | System_Photo_FlashText | Large text
+| 297 | System_Message_ToName | Large text
+| 298 | System_Contact_WebPage | Large text
+| 299 | System_Contact_PrimaryAddressCountry | Large text
+| 300 | System_Message_DateSent | Binary data
+| 301 | System_Task_CompletionStatus | Large text
+| 302 | System_Message_DateReceived | Binary data
+| 303 | System_Contact_CallbackTelephone | Large text
+| 304 | System_Message_AttachmentNames | Large text
+| 305 | System_Photo_ExposureTime | Floating point double precision (64-bit)
+| 306 | System_Contact_PrimaryAddressState | Large text
+| 307 | System_Photo_FNumber | Floating point double precision (64-bit)
+| 308 | System_Contact_HomeTelephone | Large text
+| 309 | System_FileOwner | Large text
+| 310 | System_Message_SenderName | Large text
+| 311 | System_Calendar_ShowTimeAsText | Large text
+| 312 | System_Contact_PrimaryTelephone | Large text
+| 313 | System_Contact_MailingAddress | Large text
+| 314 | System_Contact_TTYTDDTelephone | Large text
+| 315 | System_Image_HorizontalSize | Integer 32-bit unsigned
+| 316 | System_ProviderItemID | Large text
+| 317 | System_Photo_MeteringModeText | Large text
+| 318 | System_Image_VerticalSize | Integer 32-bit unsigned
+| 319 | System_Shell_OmitFromView | Large text
+| 320 | System_Media_DateReleased | Large text
+| 321 | System_ImportanceText | Large text
+| 322 | System_Image_HorizontalResolution | Floating point double precision (64-bit)
+| 323 | System_Image_VerticalResolution | Floating point double precision (64-bit)
+| 324 | System_Image_BitDepth | Integer 32-bit unsigned
+| 325 | System_Contact_HomeAddressPostOfficeBox | Large text
+| 326 | System_DateArchived | Binary data
+| 327 | System_Contact_PrimaryAddressCity | Large text
+| 328 | System_Contact_MobileTelephone | Large text
+| 329 | System_Photo_WhiteBalance | Integer 32-bit unsigned
+| 330 | System_FlagStatusText | Large text
+| 331 | System_Media_FrameCount | Integer 32-bit unsigned
+| 332 | System_Media_Duration | Binary data
+| 333 | System_Image_Dimensions | Large text
+| 334 | System_Audio_EncodingBitrate | Integer 32-bit unsigned
+| 335 | System_Message_ToDoFlags | Integer 32-bit signed
+| 336 | System_Audio_SampleRate | Integer 32-bit unsigned
+| 337 | System_Audio_SampleSize | Integer 32-bit unsigned
+| 338 | System_Audio_ChannelCount | Integer 32-bit unsigned
+| 339 | System_EndDate | Binary data
+| 340 | System_Video_StreamName | Large text
+| 341 | System_Video_FrameWidth | Integer 32-bit unsigned
+| 342 | System_Photo_Event | Large text
+| 343 | System_GPS_Date | Binary data
+| 344 | System_Contact_Birthday | Binary data
+| 345 | System_Video_FrameHeight | Integer 32-bit unsigned
+| 346 | System_Contact_PrimaryEmailAddress | Large text
+| 347 | System_Contact_HomeFaxNumber | Large text
+| 348 | System_Video_FrameRate | Integer 32-bit unsigned
+| 349 | System_Video_EncodingBitrate | Integer 32-bit unsigned
+| 350 | System_Contact_HomeAddressPostalCode | Large text
+| 351 | System_Contact_FullName | Large text
+| 352 | System_Video_SampleSize | Integer 32-bit unsigned
+| 353 | System_Contact_BusinessAddressPostOfficeBox | Large text
+| 354 | System_Video_Compression | Large text
+| 355 | System_Calendar_IsOnline | Boolean
+| 356 | System_Priority | Integer 16-bit unsigned
+| 357 | System_ParentalRatingReason | Large text
+| 358 | System_DateImported | Binary data
+| 359 | System_Status | Large text
+| 360 | System_Message_HasAttachments | Boolean
+| 361 | System_Communication_HeaderItem | Boolean
+| 362 | System_Rating | Integer 32-bit unsigned
+| 363 | System_Communication_FollowupIconIndex | Integer 32-bit signed
+| 364 | System_Copyright | Large text
+| 365 | System_Contact_HomeAddressCity | Large text
+| 366 | System_Media_ClassPrimaryID | Large text
+| 367 | System_Contact_BusinessFaxNumber | Large text
+| 368 | System_Media_ClassSecondaryID | Large text
+| 369 | System_Media_DateEncoded | Binary data
+| 370 | System_Media_DVDID | Large text
+| 371 | System_Contact_OtherAddressStreet | Large text
+| 372 | System_Media_MCDI | Large text
+| 373 | System_Contact_PersonalTitle | Large text
+| 374 | System_Media_MetadataContentProvider | Large text
+| 375 | System_Media_ContentDistributor | Large text
+| 376 | System_Contact_MiddleName | Large text
+| 377 | System_Music_Composer | Large text
+| 378 | System_Video_Director | Large text
+| 379 | System_Contact_Suffix | Large text
+| 380 | System_ParentalRating | Large text
+| 381 | System_FlagColor | Integer 16-bit unsigned
+| 382 | System_Contact_NickName | Large text
+| 383 | System_Communication_TaskStatus | Integer 16-bit unsigned
+| 384 | System_Media_Producer | Large text
+| 385 | System_Media_Writer | Large text
+| 386 | System_RecordedTV_OriginalBroadcastDate | Binary data
+| 387 | System_Media_CollectionGroupID | Large text
+| 388 | System_Audio_PeakValue | Integer 32-bit unsigned
+| 389 | System_Media_CollectionID | Large text
+| 390 | System_Note_ColorText | Large text
+| 391 | System_Media_ContentID | Large text
+| 392 | System_RecordedTV_StationName | Large text
+| 393 | System_Media_CreatorApplication | Large text
+| 394 | System_Media_CreatorApplicationVersion | Large text
+| 395 | System_IsFlaggedComplete | Boolean
+| 396 | System_Media_Publisher | Large text
+| 397 | System_Music_Period | Large text
+| 398 | System_Link_TargetParsingPath | Large text
+| 399 | System_Video_HorizontalAspectRatio | Integer 32-bit unsigned
+| 400 | System_Contact_AssistantName | Large text
+| 401 | System_Video_TotalBitrate | Integer 32-bit unsigned
+| 402 | System_Media_UserWebUrl | Large text
+| 403 | System_Video_FourCC | Integer 32-bit unsigned
+| 404 | System_Media_UniqueFileIdentifier | Large text
+| 405 | System_Video_VerticalAspectRatio | Integer 32-bit unsigned
+| 406 | System_Media_EncodedBy | Large text
+| 407 | System_Contact_PagerTelephone | Large text
+| 408 | System_Media_ProtectionType | Large text
+| 409 | System_Link_TargetSFGAOFlags | Integer 32-bit unsigned
+| 410 | System_Media_ProviderRating | Large text
+| 411 | System_Media_ProviderStyle | Large text
+| 412 | System_Media_UserNoAutoInfo | Large text
+| 413 | System_Contact_CompanyMainTelephone | Large text
+| 414 | System_IsFlagged | Boolean
+| 415 | System_Communication_SecurityFlags | Integer 32-bit signed
+| 416 | System_Contact_EmailAddresses | Large text
+| 417 | System_Calendar_OrganizerAddress | Large text
+| 418 | System_Message_IsFwdOrReply | Integer 32-bit signed
+| 419 | System_Contact_Department | Large text
+| 420 | System_Communication_DateItemExpires | Binary data
+| 421 | System_DueDate | Binary data
+| 422 | System_Contact_BusinessAddressStreet | Large text
+| 423 | System_Contact_PrimaryAddressPostalCode | Large text
+| 424 | System_Contact_OtherAddressState | Large text
+| 425 | System_Contact_LastName | Large text
+| 426 | System_StartDate | Binary data
+| 427 | System_Calendar_Location | Large text
+| 428 | System_Photo_FocalLengthInFilm | Integer 16-bit unsigned
+| 429 | System_Calendar_IsRecurring | Boolean
+| 430 | System_Image_Compression | Integer 16-bit unsigned
+| 431 | System_Photo_OrientationText | Large text
+| 432 | System_Journal_EntryType | Large text
+| 433 | System_Contact_Anniversary | Binary data
+| 434 | System_ItemAuthors | Large text
+| 435 | System_IsAttachment | Boolean
+| 436 | System_Contact_HomeAddressState | Large text
+| 437 | System_Message_SenderAddress | Large text
+| 438 | System_Contact_FirstName | Large text
+| 439 | System_Calendar_ShowTimeAs | Integer 16-bit unsigned
+| 440 | System_Calendar_ReminderTime | Binary data
+| 441 | System_Search_AutoSummary | Large binary data +
+Contains a compressed string
+| 442 | System_Project | Large text
+| 443 | System_IsEncrypted | Boolean
+| 444 | System_ItemDate | Binary data
+| 445 | System_Document_DocumentID | Large text
+| 446 | System_Contact_BusinessTelephone | Large text
+| 447 | System_Photo_CameraManufacturer | Large text
+| 448 | System_Communication_TaskStatusText | Large text
+| 449 | System_Photo_CameraModel | Large text
+| 450 | System_Link_TargetUrl | Large text
+| 451 | System_Photo_Orientation | Integer 16-bit unsigned
+| 452 | System_Contact_BusinessAddressCity | Large text
+| 453 | System_Contact_BusinessAddressPostalCode | Large text
+| 454 | System_ItemNamePrefix | Large text
+| 455 | System_Contact_Profession | Large text
+| 456 | System_Contact_OtherAddress | Large text
+| 457 | System_Kind | Large text
+| 458 | System_Message_ProofInProgress | Boolean
+| 459 | System_Calendar_OptionalAttendeeAddresses | Large text
+| 460 | System_Contact_OtherAddressPostalCode | Large text
+| 461 | System_ThumbnailCacheId | Binary data +
+Contains 64-bit big-endian integer value
+| 462 | System_Category | Large text
+| 463 | System_Photo_ShutterSpeed | Floating point double precision (64-bit)
+| 464 | System_MileageInformation | Large text
+| 465 | System_Document_PresentationFormat | Large text
+| 466 | System_Photo_Aperture | Floating point double precision (64-bit)
+| 467 | System_Document_ByteCount | Integer 32-bit signed
+| 468 | System_Document_LineCount | Integer 32-bit signed
+| 469 | System_Photo_ExposureBias | Floating point double precision (64-bit)
+| 470 | System_Document_ParagraphCount | Integer 32-bit signed
+| 471 | System_Contact_CarTelephone | Large text
+| 472 | System_Document_SlideCount | Integer 32-bit signed
+| 473 | System_Contact_HomeAddress | Large text
+| 474 | System_Photo_SubjectDistance | Floating point double precision (64-bit)
+| 475 | System_Search_Store | Large text
+| 476 | System_Photo_MeteringMode | Integer 16-bit unsigned
+| 477 | System_Document_HiddenSlideCount | Integer 32-bit signed
+| 478 | System_Calendar_Resources | Large text
+| 479 | System_Photo_LightSource | Integer 32-bit unsigned
+| 480 | System_Photo_Flash | Integer 8-bit unsigned
+| 481 | System_Photo_FocalLength | Floating point double precision (64-bit)
+| 482 | System_Photo_ExposureProgram | Integer 32-bit unsigned
+| 483 | System_IconIndex | Integer 32-bit signed
+| 484 | System_Document_Manager | Large text
+| 485 | System_Company | Large text
+| 486 | System_Photo_ISOSpeed | Integer 16-bit unsigned
+| 487 | System_Contact_OtherAddressCountry | Large text
+| 488 | System_SoftwareUsed | Large text
+| 489 | System_Message_Flags | Integer 32-bit signed
+| 490 | System_Contact_Label | Large text
+| 491 | System_PriorityText | Large text
+| 492 | System_ContentType | Large text
+| 493 | System_SourceItem | Large text
+| 494 | System_OriginalFileName | Large text
+| 495 | System_ContentStatus | Large text
+| 496 | System_Language | Large text
+| 497 | System_Document_Version | Large text
+| 498 | System_ItemFolderNameDisplay | Large text
+| 499 | System_Document_Division | Large text
+| 500 | System_Media_SubscriptionContentId | Large text
+| 501 | System_ItemTypeText | Large text
+| 502 | System_Contact_EmailAddress | Large text
+| 503 | System_Title | Large text
+| 504 | System_Subject | Large text
+| 505 | System_Author | Large text
+| 506 | System_Keywords | Large text
+| 507 | SSystem_Keywords | Large text
+| 508 | System_Comment | Large text
+| 509 | System_ItemNameDisplay | Large text
+| 510 | System_FileExtension | Large text
+| 511 | System_Document_LastAuthor | Large text
+| 512 | System_Document_RevisionNumber | Large text
+| 513 | System_Document_TotalEditingTime | Binary data
+| 514 | System_Document_DatePrinted | Binary data
+| 515 | System_Message_ConversationID | Large text
+| 516 | System_Identity | Large text
+| 517 | System_Document_DateCreated | Binary data
+| 518 | System_Contact_BusinessAddressState | Large text
+| 519 | System_Message_ConversationIndex | Large binary data
+| 520 | System_Document_DateSaved | Binary data
+| 521 | System_Music_IsCompilation | Boolean
+| 522 | System_Document_PageCount | Integer 32-bit signed
+| 523 | System_Document_WordCount | Integer 32-bit signed
+| 524 | System_Document_CharacterCount | Integer 32-bit signed
+| 525 | System_Contact_EmailName | Large text
+| 526 | System_Calendar_ResponseStatus | Integer 16-bit unsigned
+| 527 | System_Photo_ProgramModeText | Large text
+| 528 | System_FileFRN | Binary data
+| 529 | System_ApplicationName | Large text
+| 530 | System_ItemName | Large text
+| 531 | System_KindText | Large text
+| 532 | System_ItemFolderPathDisplayNarrow | Large text
+| 533 | System_Contact_FileAsName | Large text
+| 534 | System_Sensitivity | Integer 16-bit unsigned
+| 535 | System_Image_CompressionText | Large text
+| 536 | System_Task_Owner | Large text
+| 537 | System_Contact_BusinessAddress | Large text
+| 538 | System_Photo_MaxAperture | Floating point double precision (64-bit)
+| 539 | System_Document_ClientID | Large text
+| 540 | System_Contact_AssistantTelephone | Large text
+| 541 | System_Music_DisplayArtist | Large text
+| 542 | System_Photo_TagViewAggregate | Large text
+| 543 | SSystem_Photo_TagViewAggregate | Large text
+| 544 | System_Photo_PeopleNames | Large text
+| 545 | System_FlagColorText | Large text
+| 546 | System_Contact_PrimaryAddressPostOfficeBox | Large text
+| 547 | System_Contact_BusinessAddressCountry | Large text
+| 548 | System_Communication_PolicyTag | Large text
+| 549 | System_Photo_ExposureProgramText | Large text
+| 550 | System_Music_Artist | Large text
+| 551 | SSystem_Music_Artist | Large text
+| 552 | System_Photo_SaturationText | Large text
+| 553 | System_Music_AlbumTitle | Large text
+| 554 | System_Media_Year | Integer 32-bit unsigned
+| 555 | System_Music_TrackNumber | Integer 32-bit unsigned
+| 556 | System_Contact_HomeAddressCountry | Large text
+| 557 | System_Music_Genre | Large text
+| 558 | SSystem_Music_Genre | Large text
+| 559 | System_Media_AverageLevel | Integer 32-bit unsigned
+| 560 | System_Journal_Contacts | Large text
+| 561 | System_Music_AlbumArtist | Large text
+| 562 | System_RecordedTV_EpisodeName | Large text
+| 563 | System_RecordedTV_ProgramDescription | Large text
+| 564 | System_RecordedTV_StationCallSign | Large text
+| 565 | System_Message_MessageClass | Large text
+| 566 | System_SensitivityText | Large text
+| 567 | System_Contact_IMAddress | Large text
+| 568 | System_RecordedTV_ChannelNumber | Integer 32-bit unsigned
+| 569 | System_Photo_WhiteBalanceText | Large text
+| 570 | System_Calendar_OrganizerName | Large text
+| 571 | System_AcquisitionID | Integer 32-bit signed
+| 572 | System_RecordedTV_IsClosedCaptioningAvailable | Boolean
+| 573 | System_Photo_PhotometricInterpretationText | Large text
+| 574 | System_RecordedTV_IsRepeatBroadcast | Boolean
+| 575 | System_RecordedTV_IsSAP | Boolean
+| 576 | System_RecordedTV_DateContentExpires | Binary data
+| 577 | System_Message_ToDoTitle | Large text
+| 578 | System_DateCompleted | Binary data
+| 579 | System_RecordedTV_IsATSCContent | Boolean
+| 580 | System_RecordedTV_IsDTVContent | Boolean
+| 581 | System_RecordedTV_IsHDContent | Boolean
+| 582 | System_Music_ContentGroupDescription | Large text
+| 583 | System_Music_InitialKey | Large text
+| 584 | System_Music_BeatsPerMinute | Large text
+| 585 | System_Music_Conductor | Large text
+| 586 | System_Calendar_RequiredAttendeeAddresses | Large text
+| 587 | System_Music_PartOfSet | Large text
+| 588 | System_Media_SubTitle | Large text
+| 589 | System_Music_Mood | Large text
+| 590 | Microsoft_IE_FeedItemLocalId | Large text
+| 591 | System_Note_Color | Integer 16-bit unsigned
+| 592 | System_Contact_JA_CompanyNamePhonetic | Large text
+| 593 | System_ComputerName | Large text
+| 594 | System_Calendar_OptionalAttendeeNames | Large text
+| 595 | System_Contact_JA_FirstNamePhonetic | Large text
+| 596 | System_Contact_Hobbies | Large text
+| 597 | System_Contact_OtherAddressPostOfficeBox | Large text
+| 598 | System_Contact_JA_LastNamePhonetic | Large text
+| 599 | System_ItemPathDisplayNarrow | Large text
+| 600 | System_RecordedTV_NetworkAffiliation | Large text
+| 601 | System_Contact_TelexNumber | Large text
+| 602 | System_ItemType | Large text
+| 603 | System_Contact_OtherAddressCity | Large text
+| 604 | System_Contact_Gender | Large text
+| 605 | System_Contact_GenderValue | Integer 16-bit unsigned
+| 606 | System_Photo_SharpnessText | Large text
+| 607 | System_RatingText | Large text
+| 608 | System_Photo_FlashFired | Boolean
+| 609 | System_Photo_DateTaken | Binary data
+| 610 | System_Photo_ContrastText | Large text
+| 611 | System_FileName | Large text
+| 612 | System_Photo_DigitalZoom | Floating point double precision (64-bit)
+| 613 | System_ParsingName | Large text
+| 614 | System_Software_DateLastUsed | Binary data
+| 615 | System_SFGAOFlags | Integer 32-bit unsigned
+| 616 | System_Contact_HomeAddressStreet | Large text
+| 617 | System_Contact_PrimaryAddressStreet | Large text
+| 618 | System_Contact_EmailAddress3 | Large text
+| 619 | System_Calendar_RequiredAttendeeNames | Large text
+| 620 | System_Calendar_Duration | Large text
+| 621 | System_Contact_Children | Large text
+| 622 | Microsoft_IE_SelectionCount | Integer 32-bit unsigned
+| 623 | Microsoft_IE_TargetUrl | Large text
+| 624 | System_RecordedTV_RecordingTime | Binary data
+| 625 | Microsoft_IE_TargetUrlHostName | Large text
+|===
 
 === SystemIndex_0P
+The SystemIndex_0P contains information about the columns in the SystemIndex_0A table.
+
+==== Windows XP, Vista and 7 Search
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | PID | Integer 32-bit signed +
+[yellow-background]*Program identifier?*
+| 2 | ColumnID | Integer 32-bit signed +
+Contains the column identifier
+| 3 | Type | Integer 32-bit signed +
+[yellow-background]*Windows Search data type?* +
+Similar to OLE variant types
+| 4 | MaxSize | Integer 32-bit signed
+| 5 | Fixed | Boolean
+| 6 | Sparse | Boolean
+| 7 | FastAccess | Integer 8-bit signed
+| 8 | Compress | Integer 8-bit signed
+| 9 | JetCompress | Boolean
+| 128 | Name | Text +
+String containing the column name
+|===
+
+=== SystemIndex_1_Properties
+==== Windows 8 Search
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IndexID | Integer 32-bit signed
+| 2 | PropertyID | Integer 32-bit signed
+| 256 | Property | Large binary data
+|===
+
+=== SystemIndex_1
+==== Windows 8 Search
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IndexID | Integer 32-bit signed
+| 256 | IndexDescription | Large binary data
+|===
+
+=== SystemIndex_DeletedDocIds
+Contains the deleted document identifiers.
+
+==== Windows XP Search
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | DocumentId | Integer 32-bit signed
+|===
+
+==== Windows Vista Search
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | DocumentId | Integer 32-bit signed
+| 2 | CheckpointVersion | Binary data
+|===
+
+=== SystemIndex_Gthr
 
 *TODO: migrate remaining documentation.*
 
