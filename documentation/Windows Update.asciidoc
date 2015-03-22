@@ -1,25 +1,25 @@
-= Windows Mail
-Analysis of the Windows Mail Database
+= Windows Update Services
+Analysis of the Windows Update Services Database
 
 :numbered!:
 [abstract]
 == Summary
-Windows Mail uses the Extensible Storage Engine (ESE) Database File (EDB) 
-format to store its folder data. This specification is based on reverse 
+Windows Update Services uses the Extensible Storage Engine (ESE) Database File 
+(EDB) format to store its data. This specification is based on reverse 
 engineering.
 
-This document is intended as a working document for the Windows Mail database 
-format specification. Which should allow existing Open Source forensic tooling 
-to be able to process this file type.
+This document is intended as a working document for the Windows Update Services 
+database format specification. Which should allow existing Open Source forensic 
+tooling to be able to process this file type.
 
 [preface]
 == Document information
 [cols="1,5"]
 |===
 | Author(s): | Joachim Metz <joachim.metz@gmail.com>
-| Abstract: | This document contains information about the Windows Mail database
+| Abstract: | This document contains information about the Windows Update database
 | Classification: | Public
-| Keywords: | Windows Mail, Extensible Storage Engine, ESE, EDB
+| Keywords: | Windows Update, Extensible Storage Engine, ESE, EDB
 |===
 
 [preface]
@@ -38,88 +38,340 @@ in the section entitled "GNU Free Documentation License".
 [cols="1,1,1,5",options="header"]
 |===
 | Version | Author | Date | Comments
-| 0.0.1 | J.B. Metz | November 2009 | Worked on initial version.
-| 0.0.2 | J.B. Metz | June 2010 | Small changes.
+| 0.0.1 | J.B. Metz | October 2009 | Worked on initial version.
+| 0.0.2 | J.B. Metz | June 2010 | Small changes
 | 0.0.3 | J.B. Metz | August 2012 | Email and license update.
 | 0.0.4 | J.B. Metz | March 2015 | Switched to asciidoc format.
 |===
 
 :numbered:
 == Overview
-Windows Mail uses the Extensible Storage Engine (ESE) Database File (EDB) 
-format to store its folder data. Windows Mail stores its data in a file named:
+1.  Overview
+Windows Update Services uses the Extensible Storage Engine (ESE) Database File 
+(EDB) format to store its data. Windows Help and Support Services stores its 
+data in a file named:
 ....
-%USERPROFILE%\AppData\Local\Microsoft\Windows Mail\WindowsMail.MSMessageStore
+C:\Windows\SoftwareDistribution\DataStore\DataStore.edb
 ....
 
 For more information about EDB see `[LIBESEDB09]`.
 
 === Test version
-The following version of programs were used to test the information within this document:
+The following version of programs were used to test the information within this 
+document:
 
-* Windows Vista Mail
+* Windows Update
+
+[yellow-background]*TODO: add version information*
 
 == Tables
-=== Streams
+=== DbParameters
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 128 | Name | Text
+| 256 | Value | Large text
+|===
+
+=== tbAUState
 
 [cols="1,3,5",options="header"]
 |===
 | Column identifier | Column name | Column type
 | 1 | Id | Integer 32-bit signed
-| 256 | Path | Large text
+| 2 | UpdateId | Binary data
+| 3 | CallId | Binary data
+| 4 | State | Integer 32-bit signed
+| 256 | BundledMatchingUpdates | Large binary data
 |===
 
-=== UserDataTable
+=== tbCcrDownloadData
 
 [cols="1,3,5",options="header"]
 |===
 | Column identifier | Column name | Column type
-| 1 | FolderId | Integer 64-bit signed
-| 2 | Id | Integer 32-bit signed
-| 256 | Table | Large text
-| 257 | Data | Large binary data
+| 1 | RowId | Integer 32-bit signed
+| 2 | FixedData | Binary data
+| 256 | IdUser | Large binary data
+| 257 | SusClientName | Large text
+| 258 | FixedMatchingUpdateInfo | Binary data
+| 259 | MatchingUpdateUpdates | Large binary data
+| 260 | CallStatus | Large binary data
+| 261 | UpdateStatus | Large binary data
+| 262 | ProxyList | Large text
+| 263 | ProxyBypassList | Large text
 |===
 
-=== Folders
+=== tbDownloadJob
 
 [cols="1,3,5",options="header"]
 |===
-| 1 | FLDCOL_ID | Integer 64-bit signed
-| 2 | FLDCOL_PARENT | Integer 64-bit signed
-| 3 | FLDCOL_NAMEHASH | Integer 32-bit signed
-| 4 | FLDCOL_FLAGS | Integer 32-bit signed
-| 5 | FLDCOL_MESSAGES | Integer 32-bit signed
-| 6 | FLDCOL_UNREAD | Integer 32-bit signed
-| 7 | FLDCOL_SPECIAL | Integer 8-bit unsigned
-| 8 | FLDCOL_TYPE | Integer 8-bit unsigned
-| 9 | FLDCOL_HIERARCHY | Integer 8-bit unsigned
-| 10 | FLDCOL_LISTSTAMP | Integer 32-bit signed
-| 11 | FLDCOL_SERVERHIGH | Integer 32-bit signed
-| 12 | FLDCOL_SERVERLOW | Integer 32-bit signed
-| 13 | FLDCOL_SERVERCOUNT | Integer 32-bit signed
-| 14 | FLDCOL_CLIENTHIGH | Integer 32-bit signed
-| 15 | FLDCOL_CLIENTLOW | Integer 32-bit signed
-| 16 | FLDCOL_NOTDOWNLOADED | Integer 32-bit signed
-| 17 | FLDCOL_THREADUNREAD | Integer 32-bit signed
-| 18 | FLDCOL_VIEWUNREAD | Integer 32-bit signed
-| 19 | FLDCOL_STATUSMSGDELTA | Integer 32-bit signed
-| 20 | FLDCOL_STATUSUNREADDELTA | Integer 32-bit signed
-| 21 | FLDCOL_WATCHEDHIGH | Integer 32-bit signed
-| 22 | FLDCOL_WATCHEDUNREAD | Integer 32-bit signed
-| 23 | FLDCOL_WATCHED | Integer 32-bit signed
-| 24 | FLDCOL_SUBSCRIBED | Integer 8-bit unsigned
-| 25 | FLDCOL_IGNORED | Integer 32-bit signed
-| 128 | FLDCOL_COMMUNITYREFRESH | Binary data
-| 256 | FLDCOL_NAME | Large text
-| 257 | FLDCOL_NAMEW | Large text
-| 258 | FLDCOL_FILE | Large text
-| 259 | FLDCOL_DESCRIPTION | Large text
-| 260 | FLDCOL_ACCOUNTID | Large text
-| 261 | FLDCOL_REQUESTED | Large binary data
-| 262 | FLDCOL_URLCOMPONENT | Large text
-| 263 | FLDCOL_READ | Large binary data
-| 264 | FLDCOL_PATH | Large text
+| Column identifier | Column name | Column type
+| 1 | BITSJobId | Binary data
+| 2 | LocalUpdateId | Integer 32-bit signed
+| 3 | DownloadSize | Currency (64-bit)
+| 4 | IdServer | Binary data
+| 128 | IdUser | Binary data
 |===
+
+=== tbEula
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | EulaId | Binary data
+| 2 | IsAccepted | Integer 32-bit signed
+|===
+
+=== tbFiles
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IdFileLocal | Integer 32-bit signed
+| 2 | Size | Currency (64-bit)
+| 3 | Modified | Binary data
+| 4 | RefCount | Integer 32-bit signed
+| 5 | DownloadMgrRefCount | Integer 32-bit signed
+| 6 | ExpireDate | Binary data
+| 7 | DownloadStatus | Integer 32-bit signed
+| 8 | PatchingType | Integer 32-bit signed
+| 128 | Digest | Binary data
+| 129 | DigestAlgorithm | Text
+| 256 | Name | Large text
+| 257 | LocalTargetPath | Large text
+| 258 | Urls | Large binary data
+| 259 | EulaLanguage | Text
+| 260 | EulaId | Binary data
+|===
+
+=== tbHistory
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IdEvent | Integer 32-bit signed
+| 2 | Status | Integer 32-bit signed
+| 3 | ServerSelection | Integer 32-bit signed
+| 4 | MappedResult | Integer 32-bit signed
+| 5 | UnmappedResult | Integer 32-bit signed
+| 6 | UpdateId | Binary data
+| 7 | ServerId | Binary data
+| 8 | Date | Date and time
+| 9 | Flags | Integer 32-bit signed
+| 256 | ClientId | Large text
+| 257 | Title | Large text
+| 258 | Description | Large text
+| 259 | UninstallNotes | Large text
+| 260 | SupportUrl | Large text
+| 261 | UninstallSteps | Large text
+| 262 | Categories | Large text
+| 263 | MoreInfoUrl | Large text
+|===
+
+=== tbServerConfig
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IdServer | Binary data
+| 2 | IsRegistrationRequired | Binary data
+| 128 | LastChange | Text
+| 256 | AllowedEventIds | Large binary data
+| 257 | IdPlugIn | Large text
+| 258 | ServiceUrl | Large text
+| 259 | Parameter | Large binary data
+| 260 | PropertyName | Large text
+| 261 | PropertyValue | Large text
+|===
+
+=== tbServerCookies
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IdServer | Binary data
+| 2 | RefreshCookieRequired | Integer 32-bit signed
+| 128 | Expiration | Text
+| 256 | EncryptedData | Large binary data
+| 257 | InvalidPid | Large binary data
+|===
+
+=== tbServiceData
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IdServer | Binary data
+| 2 | AUState | Integer 32-bit signed
+| 3 | ExpireDate | Binary data
+| 4 | IssueDate | Binary data
+| 5 | UIPluggin | Binary data
+| 6 | WindowsUpd | Integer 32-bit signed
+| 7 | JetStub_17_7 | NULL
+| 8 | DeletePending | Integer 32-bit signed
+| 9 | ReadOrder | Integer 32-bit signed
+| 10 | LowPriSequenceNumber | Integer 16-bit signed
+| 11 | NormalPriSequenceNumber | Integer 16-bit signed
+| 12 | HighPriSequenceNumber | Integer 16-bit signed
+| 13 | PerUpdateSequenceNumber | Integer 16-bit signed
+| 128 | CertificateHashAlgo | Text
+| 129 | SetupPrefix | Text
+| 256 | CabUrl | Large text
+| 257 | CertificateHash | Large binary data
+| 258 | LocServiceName | Large text
+| 259 | LocLanguage | Text
+| 260 | RedirectUrls | Large text
+|===
+
+=== tbStoreVersion
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | VersionMajor | Integer 32-bit signed
+| 2 | VersionMinor | Integer 32-bit signed
+|===
+
+=== tbUpdateLocalizedProps
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IdEulaFile | Integer 32-bit signed
+| 2 | IsLocDataSet | Boolean
+| 3 | Language | Text
+| 4 | IdLocal | Integer 32-bit signed
+| 5 | ImageWidth | Integer 32-bit signed
+| 6 | ImageHeight | Integer 32-bit signed
+| 256 | Title | Large text
+| 257 | Description | Large text
+| 258 | RelNotes | Large text
+| 259 | ImageSource | Large text
+| 260 | ImageAltText | Large text
+| 261 | UninstallNotes | Large text
+| 262 | SupportUrl | Large text
+| 263 | UninstallStep | Large text
+| 264 | MoreInfoUrl | Large text
+|===
+
+=== tbUpdates
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IdLocal | Integer 32-bit signed
+| 2 | UpdateId | Binary data
+| 3 | RevisionNumber | Integer 32-bit signed
+| 4 | UpdateDataAvailable | Integer 32-bit signed
+| 5 | JetStub_21_5 | NULL
+| 6 | LockState | Integer 32-bit signed
+| 7 | FailCount | Integer 32-bit signed
+| 8 | DeadlineCount | Integer 32-bit signed
+| 9 | IsBeta | Integer 32-bit signed
+| 10 | IsMandatory | Integer 32-bit signed
+| 11 | ExplcitlyDeployable | Integer 32-bit signed
+| 12 | LastInterestingFailure | Integer 32-bit signed
+| 13 | CanSourceBeRequired | Integer 32-bit signed
+| 14 | RequiresReacceptanceOfEula | Integer 32-bit signed
+| 15 | UpdateType | Integer 32-bit signed
+| 16 | DownloadDateExpire | Binary data
+| 17 | DownloadStatus | Integer 32-bit signed
+| 18 | DownloadSize | Currency (64-bit)
+| 19 | AutoSelectOnWebSites | Integer 32-bit signed
+| 20 | HandlerId | Integer 32-bit signed
+| 21 | RequestedData | Integer 32-bit signed
+| 22 | MaxDownloadSize | Currency (64-bit)
+| 23 | MinDownloadSize | Currency (64-bit)
+| 24 | RecommendedCpuSpeed | Integer 32-bit signed
+| 25 | RecommendedMemory | Integer 32-bit signed
+| 26 | RecommendedDiskSpace | Integer 32-bit signed
+| 27 | UpdAttributes | Integer 32-bit signed
+| 128 | EulaId | Binary data
+| 129 | InstallData | Binary data
+| 130 | UninstallData | Binary data
+| 131 | MsrcSeverity | Text
+| 132 | DefaultPropertiesLanguage | Text
+| 256 | SupportUrl | Large text
+| 257 | IsInstalled | Large binary data
+| 258 | IsInstallable | Large binary data
+| 259 | IsSuperceeded | Large binary data
+| 260 | UpdateHandlerData | Large binary data
+| 261 | IdFileLocal | Large binary data
+| 262 | SupersededBy | Large binary data
+| 263 | PrerequisiteUpdates | Large binary data
+| 264 | BundledUpdates | Large binary data
+| 269 | ParentCategory | Binary data
+| 270 | MoreInfoUrl | Large text
+| 271 | SecurityBulletinIds | Large text
+| 272 | KBArticleIds | Large text
+| 273 | RuleMetadata | Large binary data
+| 274 | ServerRef | Binary data
+| 275 | SupersededUpdates | Large binary data
+| 276 | LanguagesL | Large text
+| 277 | RequestedLanguagesEulaL | Large text
+| 278 | RequestedLanguagesTextL | Large text
+| 279 | CveIds | Large text
+|===
+
+=== tbSvcTransient
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IdServer | Binary data
+| 256 | InstalledCategories | Large binary data
+|===
+
+=== tbHiddenUpdates
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | Id | Integer 32-bit signed
+| 256 | UpdateIds | Large binary data
+|===
+
+=== tbPerSrvUpdate%MD5%
+Where %MD5% is the MD5 of the [yellow-background]*TODO*
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | IdLocal | Integer 32-bit signed
+| 2 | UpdateId | Binary data
+| 3 | RevisionNumber | Integer 32-bit signed
+| 4 | RevisionId | Integer 32-bit signed
+| 5 | DeploymentId | Integer 32-bit signed
+| 6 | IsLeaf | Boolean
+| 7 | Type | Integer 32-bit signed
+| 8 | HasDeadline | Boolean
+| 9 | DeploymentAction | Integer 32-bit signed
+| 10 | Deadline | Binary data
+| 11 | IsAssigned | Boolean
+| 12 | LastChangeTime | Binary data
+| 13 | DownloadPriority | Integer 32-bit signed
+|===
+
+=== tbComputerInfo
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | FixedSizeData | Binary data
+| 256 | OSLocale | Large text
+| 257 | ComputerManufacturer | Large text
+| 258 | ComputerModel | Large text
+| 259 | BiosVersion | Large text
+| 260 | BiosName | Large text
+| 261 | BiosReleaseDate | Large text
+| 262 | ProcessorArchitecture | Large text
+| 263 | DnsName | Large text
+|===
+
+[NOTE]
+This table can be empty, without column definitions.
 
 :numbered!:
 [appendix]
