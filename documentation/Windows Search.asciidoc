@@ -16,7 +16,7 @@ to be able to process this file type.
 [cols="1,5"]
 |===
 | Author(s): | Joachim Metz <joachim.metz@gmail.com>
-| Abstract: | This document contains information about the Extensible Storage Engine Database File format
+| Abstract: | This document contains information about the Windows Search database
 | Classification: | Public
 | Keywords: | Windows Search, Extensible Storage Engine, ESE, EDB
 |===
