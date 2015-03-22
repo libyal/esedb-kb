@@ -51,7 +51,7 @@ License update.
 | 0.0.7 | J.B. Metz | May 2012 | Updates for Windows 8 Consumer Preview.
 | 0.0.8 | J.B. Metz | August 2012 | Email change.
 | 0.0.9 | J.B. Metz | April 2014 | Small changes.
-| 0.0.10 | J.B. Metz | March 2015 | Switched to asccidoc format.
+| 0.0.10 | J.B. Metz | March 2015 | Switched to asciidoc format.
 |===
 
 :numbered:
@@ -184,18 +184,18 @@ big-endian.
 Contains 32-bit big-endian integer value
 | 3 | System_Search_Rank | Integer 32-bit signed
 | 4 | System_Search_GatherTime | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 5 | System_Size | Binary data +
 Contains 64-bit big-endian integer value
 | 6 | System_FileAttributes | Binary data +
 Contains 32-bit big-endian integer value +
 See section: <<file_attribute_flags,File attribute flags>>
 | 7 | System_DateModified | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 8 | System_DateCreated | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 9 | System_DateAccessed | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 128 | System_ItemFolderNameDisplay | Text
 | 129 | System_ItemTypeText | Text
 | 130 | System_ItemType | Text
@@ -206,7 +206,7 @@ Contains big-endian filetime
 | 260 | System_DRM_IsProtected | Boolean
 | 261 | System_Contact_SpouseName | Large text
 | 262 | System_DateAcquired | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 263 | System_Message_BccAddress | Large text
 | 264 | System_MIMEType | Text
 | 265 | System_IsDeleted | Boolean
@@ -240,7 +240,7 @@ Contains big-endian filetime
 | 293 | System_Message_DateSent | Binary data
 | 294 | System_Task_CompletionStatus | Text
 | 295 | System_Message_DateReceived | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 296 | System_Contact_CallbackTelephone | Text
 | 297 | System_Message_AttachmentNames | Text
 | 298 | System_Photo_ExposureTime | Floating point double precision (64-bit)
@@ -279,7 +279,7 @@ Contains big-endian filetime
 | 331 | System_Audio_SampleSize | Binary data
 | 332 | System_Audio_ChannelCount | Binary data
 | 333 | System_EndDate | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 334 | System_Video_StreamName | Text
 | 335 | System_Video_FrameWidth | Binary data
 | 336 | System_Photo_Event | Text
@@ -299,7 +299,7 @@ Contains big-endian filetime
 | 350 | System_Priority | Binary data
 | 351 | System_ParentalRatingReason | Text
 | 352 | System_DateImported | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 353 | System_Status | Text
 | 354 | System_Message_HasAttachments | Boolean
 | 355 | System_Communication_HeaderItem | Boolean
@@ -311,7 +311,7 @@ Contains big-endian filetime
 | 361 | System_Contact_BusinessFaxNumber | Text
 | 362 | System_Media_ClassSecondaryID | Text
 | 363 | System_Media_DateEncoded | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 364 | System_Media_DVDID | Text
 | 365 | System_Contact_OtherAddressStreet | Text
 | 366 | System_Media_MCDI | Text
@@ -388,7 +388,7 @@ Contains a compressed string
 | 436 | System_Project | Text
 | 437 | System_IsEncrypted | Boolean
 | 438 | System_ItemDate | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 439 | System_Document_DocumentID | Text
 | 440 | System_Contact_BusinessTelephone | Text
 | 441 | System_Photo_CameraManufacturer | Text
@@ -459,11 +459,11 @@ Contains 64-bit big-endian integer value
 | 505 | System_Message_ConversationID | Text
 | 506 | System_Identity | Text
 | 507 | System_Document_DateCreated | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 508 | System_Contact_BusinessAddressState | Text
 | 509 | System_Message_ConversationIndex | Large binary data
 | 510 | System_Document_DateSaved | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 511 | System_Document_PageCount | Integer 32-bit signed
 | 512 | System_Document_WordCount | Integer 32-bit signed
 | 513 | System_Document_CharacterCount | Integer 32-bit signed
@@ -544,7 +544,7 @@ Contains big-endian filetime
 | 588 | System_RatingText | Text
 | 589 | System_Photo_FlashFired | Boolean
 | 590 | System_Photo_DateTaken | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 591 | System_Photo_ContrastText | Text
 | 592 | System_FileName | Large text
 | 593 | System_Photo_DigitalZoom | Floating point double precision (64-bit)
@@ -577,18 +577,18 @@ little-endian.
 | 1 | DocID | Integer 32-bit signed
 | 2 | `__SDID` | Integer 32-bit signed
 | 3 | System_Search_GatherTime | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 4 | System_Search_Rank | Integer 32-bit signed
 | 5 | System_Size | Currency (64-bit) +
 Contains 64-bit little-endian integer value
 | 6 | System_FileAttributes | Integer 32-bit signed +
 See section: <<file_attribute_flags,File attribute flags>>
 | 7 | System_DateModified | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 8 | System_DateCreated | Binary data
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 9 | System_DateAccessed | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 128 | System_ItemFolderNameDisplay | Binary data +
 Contains a compressed string
 | 129 | System_ItemTypeText | Binary data +
@@ -643,7 +643,7 @@ Contains a compressed string
 | 291 | System_Media_CollectionID | Binary data +
 Contains a compressed string
 | 292 | System_Photo_DateTaken | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 293 | System_Message_CcName | Large binary data
 | 294 | System_Contact_FileAsName | Large binary data
 | 295 | System_Calendar_Duration | Binary data
@@ -668,7 +668,7 @@ Contains a compressed string
 | 309 | System_FileName | Large binary data +
 Contains a compressed string
 | 310 | System_EndDate | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 311 | System_Video_FrameRate | Integer 32-bit signed
 | 312 | System_Music_Genre | Large binary data +
 Contains a compressed string
@@ -725,7 +725,7 @@ Contains a compressed string
 | 357 | System_Company | Binary data
 | 358 | System_Video_HorizontalAspectRatio | Integer 32-bit signed
 | 359 | System_Media_DateEncoded | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 360 | System_Photo_ExposureTime | Floating point double precision (64-bit)
 | 361 | System_Message_MessageClass | Binary data +
 Contains a compressed string
@@ -737,7 +737,7 @@ Contains a compressed string
 | 366 | System_SFGAOFlags | Integer 32-bit signed
 | 367 | System_Video_TotalBitrate | Integer 32-bit signed
 | 368 | System_RecordedTV_RecordingTime | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 369 | System_Media_UserWebUrl | Large binary data
 | 370 | System_Photo_MeteringModeText | Binary data
 | 371 | System_Message_FromName | Large binary data +
@@ -745,7 +745,7 @@ Contains a compressed string
 | 372 | System_Communication_TaskStatus | Integer 16-bit signed
 | 373 | System_ProviderItemID | Binary data
 | 374 | System_ItemDate | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 375 | System_Video_FourCC | Integer 32-bit signed
 | 376 | System_Media_UniqueFileIdentifier | Binary data
 | 377 | System_Message_Store | Binary data +
@@ -801,7 +801,7 @@ Contains a compressed string
 | 416 | System_Message_SenderAddress | Large binary data +
 Contains a compressed string
 | 417 | System_Message_DateSent | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 418 | System_Contact_OtherAddressCountry | Binary data
 | 419 | System_Contact_MobileTelephone | Binary data
 | 420 | System_Contact_HomeAddressCountry | Binary data
@@ -815,14 +815,14 @@ Contains a compressed string
 | 427 | System_Photo_Aperture | Floating point double precision (64-bit)
 | 428 | System_Image_HorizontalResolution | Floating point double precision (64-bit)
 | 429 | System_Message_DateReceived | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 430 | System_Contact_OtherAddressCity | Binary data
 | 431 | System_Calendar_ShowTimeAs | Integer 16-bit signed
 | 432 | System_Rating | Integer 32-bit signed
 | 433 | System_Identity | Binary data +
 Contains a compressed string
 | 434 | System_DueDate | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 435 | System_RecordedTV_ChannelNumber | Integer 32-bit signed
 | 436 | System_Media_UserNoAutoInfo | Binary data
 | 437 | System_Photo_ProgramModeText | Binary data
@@ -870,7 +870,7 @@ Contains a compressed string
 Contains a compressed string
 | 476 | System_Photo_MeteringMode | Integer 16-bit signed
 | 477 | System_Document_DateCreated | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 478 | System_Contact_JA_CompanyNamePhonetic | Large binary data
 | 479 | System_Contact_HomeAddressPostOfficeBox | Binary data
 | 480 | System_Contact_BusinessTelephone | Binary data
@@ -881,7 +881,7 @@ Contains a compressed string
 | 484 | System_RecordedTV_IsClosedCaptioningAvailable | Boolean
 | 485 | System_Media_DVDID | Binary data
 | 486 | System_Document_DateSaved | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 487 | System_Contact_Suffix | Binary data
 | 488 | System_Contact_Profession | Binary data
 | 489 | System_Contact_Label | Binary data
@@ -911,9 +911,9 @@ Contains a compressed string
 | 509 | System_ItemAuthors | Large binary data +
 Contains a compressed string
 | 510 | System_DateImported | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 511 | System_DateAcquired | Binary data +
-Contains little-endian filetime
+Contains little-endian FILETIME
 | 512 | System_Search_Store | Binary data +
 Contains a compressed string
 | 513 | System_RecordedTV_IsSAP | Boolean
@@ -1004,18 +1004,18 @@ value.
 | 1 | DocID | Integer 32-bit signed
 | 2 | System_Search_Rank | Integer 32-bit signed
 | 3 | System_Search_GatherTime | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 4 | System_Search_Rank | Integer 32-bit signed
 | 5 | System_Size | Currency (64-bit) +
 Contains 64-bit big-endian integer value
 | 6 | System_FileAttributes | Integer 32-bit unsigned
 See section: <<file_attribute_flags,File attribute flags>>
 | 7 | System_DateModified | Binary data _
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 8 | System_DateCreated | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 9 | System_DateAccessed | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 256 | System_Null | Large binary data +
 Contains a compressed string
 | 257 | Microsoft_IE_TargetUrlPath | Large text
@@ -1527,7 +1527,7 @@ Contains UTF-16 little-endian string
 | 2 | DocumentID | Integer 32-bit signed
 | 3 | SDID | Integer 32-bit signed
 | 4 | LastModified | Binary data +
-Contains big-endian filetime
+Contains big-endian FILETIME
 | 5 | TransactionFlags | Integer 32-bit signed
 | 6 | CrawlNumberCrawled | Integer 32-bit signed
 | 7 | StartAddressIdentifier | Integer 16-bit unsigned
@@ -2172,7 +2172,7 @@ The file attribute flags consist of the following values:
 [cols="1,1,5",options="header"]
 |===
 | Value | Identifier | Description
-| 0x00000001 | FILE_ATTRIBUTE_READONLY | Is read-Only
+| 0x00000001 | FILE_ATTRIBUTE_READONLY | Is read-only
 | 0x00000002 | FILE_ATTRIBUTE_HIDDEN | Is hidden
 | 0x00000004 | FILE_ATTRIBUTE_SYSTEM | Is a system file or directory
 | 0x00000008 | | Reserved +
