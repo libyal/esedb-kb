@@ -9,6 +9,8 @@ import sys
 
 import pyesedb
 
+import database
+
 
 # pylint: disable=superfluous-parens
 
@@ -58,7 +60,7 @@ COLUMN_TYPE_IDENTIFIERS = {
 }
 
 
-class ColumnDefinition(object):
+class EseColumnDefinition(object):
   """Class that defines an ESE database column definition."""
 
   def __init__(self, column_identifier, column_name, column_type):
@@ -69,13 +71,28 @@ class ColumnDefinition(object):
       column_name: the column name.
       column_type: the column type.
    """
-    super(ColumnDefinition, self).__init__()
+    super(EseColumnDefinition, self).__init__()
     self.identifier = column_identifier
     self.name = column_name
     self.type = column_type
 
 
-class TableDefinition(object):
+class EseDatabaseDefinition(object):
+  """Class that defines an ESE database definition."""
+
+  def __init__(self, database_type, database_version):
+    """Initializes the ESE database database definition object.
+
+    Args:
+      database_type: the ESE database type.
+      database_version: the ESE database version.
+   """
+    super(EseDatabaseDefinition, self).__init__()
+    self.type = database_type
+    self.version = database_version
+
+
+class EseTableDefinition(object):
   """Class that defines an ESE database table definition."""
 
   def __init__(self, table_name, template_table_name):
@@ -85,7 +102,7 @@ class TableDefinition(object):
       table_name: the table name.
       template_table_name: the template table name.
    """
-    super(TableDefinition, self).__init__()
+    super(EseTableDefinition, self).__init__()
     self.column_definitions = []
     self.name = table_name
     self.template_table_name = template_table_name
@@ -98,9 +115,9 @@ class TableDefinition(object):
       column_name: the column name.
       column_type: the column type.
     """
-    column_definition = ColumnDefinition(
+    ese_column_definition = EseColumnDefinition(
         column_identifier, column_name, column_type)
-    self.column_definitions.append(column_definition)
+    self.column_definitions.append(ese_column_definition)
 
 
 class ColumnOverlay(object):
@@ -154,9 +171,16 @@ class TableOverlay(object):
 class EseDbCatalogExtractor(object):
   """Class that defines an ESE database catalog extractor."""
 
-  def __init__(self):
-    """Initializes the ESE database catalog extractor object."""
+  def __init__(self, database_type, database_version):
+    """Initializes the ESE database catalog extractor object.
+
+    Args:
+      database_type: the ESE database type.
+      database_version: the ESE database version.
+    """
     super(EseDbCatalogExtractor, self).__init__()
+    self._database_type = database_type
+    self._database_version = database_version
 
   def ExtractCatalog(self, filename, output_writer):
     """Extracts the catalog from the database.
@@ -168,26 +192,29 @@ class EseDbCatalogExtractor(object):
     esedb_file = pyesedb.file()
     esedb_file.open(filename)
 
-    # TODO: write the database type and version.
+    ese_database_definition = EseDatabaseDefinition(
+        self._database_type, self._database_version)
+
+    output_writer.WriteDatabaseDefinition(ese_database_definition)
+
+    # TODO: write an overview of the table names.
     # TODO: write the table and index names per type and version.
 
     for esedb_table in esedb_file.tables:
-      table_definition = TableDefinition(
+      ese_table_definition = EseTableDefinition(
           esedb_table.name, esedb_table.template_name)
 
       for esedb_column in esedb_table.columns:
-        table_definition.AddColumnDefinition(
+        ese_table_definition.AddColumnDefinition(
             esedb_column.identifier, esedb_column.name, esedb_column.type)
 
-      output_writer.WriteTableDefinition(table_definition)
+      output_writer.WriteTableDefinition(ese_table_definition)
 
     esedb_file.close()
 
 
 class Sqlite3OutputWriter(object):
   """Class that defines a sqlite3 output writer."""
-
-  EVENT_PROVIDERS_DATABASE_FILENAME = u'winevt-kb.db'
 
   def __init__(self, databases_path):
     """Initializes the output writer object.
@@ -204,8 +231,11 @@ class Sqlite3OutputWriter(object):
     self._database_writer.Close()
     self._database_writer = None
 
-  def Open(self):
+  def Open(self, database_type):
     """Opens the output writer object.
+
+    Args:
+      database_type: the ESE database type.
 
     Returns:
       A boolean containing True if successful or False if not.
@@ -213,36 +243,55 @@ class Sqlite3OutputWriter(object):
     if not os.path.isdir(self._databases_path):
       return False
 
-    # TODO: implement.
-    # self._database_writer = database.EseDbCatalogSqlite3DatabaseWriter()
-    # self._database_writer.Open(os.path.join(
-    #     self._databases_path, self.EVENT_PROVIDERS_DATABASE_FILENAME))
+    database_filename = u'{0:s}.db'.format(database_type)
+    self._database_writer = database.EseDbCatalogSqlite3DatabaseWriter()
+    self._database_writer.Open(os.path.join(
+        self._databases_path, database_filename))
 
     return True
 
-  def WriteTableDefinition(self, table_definition):
+  def WriteDatabaseDefinition(self, ese_database_definition):
+    """Writes the database definition.
+
+    Args:
+      ese_database_definition: the database definition (instance of
+                               EseDatabaseDefinition).
+    """
+    self._database_writer.WriteDatabaseDefinition(ese_database_definition)
+
+  def WriteTableDefinition(self, ese_table_definition):
     """Writes the table definition.
 
     Args:
-      table_definition: the table definition (instance of TableDefinition).
+      ese_table_definition: the table definition (instance of
+                            EseTableDefinition).
     """
-    # TODO: implement.
-    return
+    # TODO: detect tables with duplicate names and different definitions.
+    self._database_writer.WriteTableDefinition(ese_table_definition)
+
+    table_definition_key = self._database_writer.GetTableDefinitionKey(
+        ese_table_definition)
+
+    for ese_column_definition in ese_table_definition.column_definitions:
+      self._database_writer.WriteColumnDefinition(
+          table_definition_key, ese_column_definition)
 
 
 class StdoutWriter(object):
   """Class that defines a stdout output writer."""
 
-  def _WriteColumnDefinition(self, column_definition):
+  def _WriteColumnDefinition(self, ese_column_definition):
     """Writes the column definition.
 
     Args:
-      column_definition: the column definition (instance of ColumnDefinition).
+      ese_column_definition: the column definition (instance of
+                             EseColumnDefinition).
     """
     column_type = COLUMN_TYPE_DESCRIPTIONS.get(
-        column_definition.type, u'UNKNOWN')
+        ese_column_definition.type, u'UNKNOWN')
     print(u'| {0:d} | {1:s} | {2:s}'.format(
-        column_definition.identifier, column_definition.name, column_type))
+        ese_column_definition.identifier, ese_column_definition.name,
+        column_type))
 
   def _WriteTableFooter(self):
     """Writes the table footer."""
@@ -256,7 +305,8 @@ class StdoutWriter(object):
       table_name: the table name.
       template_table_name: the template table name.
     """
-    print(u'== {0:s}'.format(table_name))
+    print(u'=== [[{0:s}]]{1:s}'.format(
+        table_name.lower(), table_name))
 
     if template_table_name:
       print(u'Template table: {0:s}'.format(template_table_name))
@@ -270,25 +320,40 @@ class StdoutWriter(object):
     """Closes the output writer object."""
     pass
 
-  def Open(self):
+  def Open(self, unused_database_type):
     """Opens the output writer object.
+
+    Args:
+      database_type: the ESE database type.
 
     Returns:
       A boolean containing True if successful or False if not.
     """
     return True
 
-  def WriteTableDefinition(self, table_definition):
+  def WriteDatabaseDefinition(self, ese_database_definition):
+    """Writes the database definition.
+
+    Args:
+      ese_database_definition: the database definition (instance of
+                               EseDatabaseDefinition).
+    """
+    print(u'== {0:s} {1:s}'.format(
+        ese_database_definition.type, ese_database_definition.version))
+    print(u'')
+
+  def WriteTableDefinition(self, ese_table_definition):
     """Writes the table definition.
 
     Args:
-      table_definition: the table definition (instance of TableDefinition).
+      ese_table_definition: the table definition (instance of
+                            EseTableDefinition).
     """
     self._WriteTableHeader(
-        table_definition.name, table_definition.template_table_name)
+        ese_table_definition.name, ese_table_definition.template_table_name)
 
-    for column_definition in table_definition.column_definitions:
-      self._WriteColumnDefinition(column_definition)
+    for ese_column_definition in ese_table_definition.column_definitions:
+      self._WriteColumnDefinition(ese_column_definition)
 
     self._WriteTableFooter()
 
@@ -303,23 +368,23 @@ def Main():
       u'Extract the catalog from the ESE database file.'))
 
   args_parser.add_argument(
-      u'source', nargs=u'?', action=u'store', metavar=u'/mnt/c/',
-      default=None, help=(u'path of the ESE database file.'))
+      u'source', action=u'store', nargs=u'?', default=None,
+      help=u'path of the ESE database file.', metavar=u'/mnt/c/')
 
   args_parser.add_argument(
-      u'--db', u'--database', dest=u'database', action=u'store',
-      metavar=u'./winevt-db/', default=None, help=(
-          u'directory to write the sqlite3 databases to.'))
+      u'database_type', action=u'store', nargs=u'?', default=None,
+      help=u'string that identifies the ESE database type.',
+      metavar=u'search')
 
   args_parser.add_argument(
-      u'--type', dest=u'type', action=u'store', metavar=u'search',
-      default=None, help=(
-          u'string that identifies the ESE database type.'))
+      u'database_version', action=u'store', nargs=u'?', default=None,
+      help=u'string that identifies the ESE database version.',
+      metavar=u'XP')
 
   args_parser.add_argument(
-      u'--version', dest=u'version', action=u'store', metavar=u'xp',
-      default=None, help=(
-          u'string that identifies the ESE database version.'))
+      u'--db', u'--database', action=u'store', default=None,
+      help=u'directory to write the sqlite3 databases to.',
+      metavar=u'./esedb-kb/', dest=u'database')
 
   options = args_parser.parse_args()
 
@@ -335,13 +400,18 @@ def Main():
     print(u'')
     return False
 
-  logging.basicConfig(
-      level=logging.INFO, format=u'[%(levelname)s] %(message)s')
-
-  if not options.type or not options.version:
-    print(u'Missing type or version.')
+  if not options.database_type:
+    print(u'Database type value is missing.')
     print(u'')
     return False
+
+  if not options.database_version:
+    print(u'Database version value is missing.')
+    print(u'')
+    return False
+
+  logging.basicConfig(
+      level=logging.INFO, format=u'[%(levelname)s] %(message)s')
 
   if options.database:
     if not os.path.exists(options.database):
@@ -356,14 +426,16 @@ def Main():
   else:
     output_writer = StdoutWriter()
 
-  if not output_writer.Open():
+  if not output_writer.Open(options.database_type):
     print(u'Unable to open output writer.')
     print(u'')
     return False
 
-  extractor = EseDbCatalogExtractor()
+  extractor = EseDbCatalogExtractor(
+      options.database_type, options.database_version)
 
   # TODO: read table and index overlays from file.
+  # maybe something for an export script.
   # overlays = {}
 
   extractor.ExtractCatalog(options.source, output_writer)

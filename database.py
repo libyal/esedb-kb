@@ -240,3 +240,176 @@ class Sqlite3DatabaseWriter(object):
       A boolean containing True if successful or False if not.
     """
     self._database_file.Open(filename)
+
+
+class EseDbCatalogSqlite3DatabaseWriter(Sqlite3DatabaseWriter):
+  """Class to represent an ESE database catolog sqlite3 writer."""
+
+  def _GetDatabaseDefinitionKey(self, ese_database_definition):
+    """Retrieves the key of a database definition.
+
+    Args:
+      ese_database_definition: the database definition (instance of
+                               EseDatabaseDefinition).
+
+    Returns:
+      An integer containing the database definition key
+      or None if no such value.
+
+    Raises:
+      RuntimeError: if more than one value is found in the database.
+    """
+    table_names = [u'database_definitions']
+    column_names = [u'database_definition_key']
+    condition = u'type = "{0:s}" AND version = "{1:s}"'.format(
+        ese_database_definition.type, ese_database_definition.version)
+    values_list = list(self._database_file.GetValues(
+        table_names, column_names, condition))
+
+    number_of_values = len(values_list)
+    if number_of_values == 0:
+      return
+
+    if number_of_values == 1:
+      values = values_list[0]
+      return values[u'database_definition_key']
+
+    raise RuntimeError(u'More than one value found in database.')
+
+  def GetTableDefinitionKey(self, ese_table_definition):
+    """Retrieves the key of a database definition.
+
+    Args:
+      ese_table_definition: the database definition (instance of
+                            EseTableDefinition).
+
+    Returns:
+      An integer containing the database definition key
+      or None if no such value.
+
+    Raises:
+      RuntimeError: if more than one value is found in the database.
+    """
+    table_names = [u'table_definitions']
+    column_names = [u'table_definition_key']
+    condition = u'name = "{0:s}"'.format(ese_table_definition.name)
+    values_list = list(self._database_file.GetValues(
+        table_names, column_names, condition))
+
+    number_of_values = len(values_list)
+    if number_of_values == 0:
+      return
+
+    if number_of_values == 1:
+      values = values_list[0]
+      return values[u'table_definition_key']
+
+    raise RuntimeError(u'More than one value found in database.')
+
+  def WriteColumnDefinition(self, table_definition_key, ese_column_definition):
+    """Writes the column definition.
+
+    Args:
+      table_definition_key: the table definition key.
+      ese_column_definition: the column definition (instance of
+                             EseColumnDefinition).
+    """
+    table_name = u'column_definitions'
+    column_names = [u'identifier', u'name', u'type', u'table_definition_key']
+
+    has_table = self._database_file.HasTable(table_name)
+    if not has_table:
+      column_definitions = [
+          u'column_definition_key INTEGER PRIMARY KEY AUTOINCREMENT',
+          u'identifier TEXT', u'name TEXT', u'type TEXT',
+          u'table_definition_key INTEGER']
+      self._database_file.CreateTable(table_name, column_definitions)
+      insert_values = True
+
+    else:
+      condition = u'name = "{0:s}" AND table_definition_key = {1:d}'.format(
+          ese_column_definition.name, table_definition_key)
+      values_list = list(self._database_file.GetValues(
+          [table_name], column_names, condition))
+
+      number_of_values = len(values_list)
+      if number_of_values == 0:
+        insert_values = True
+      else:
+        # TODO: check if more than 1 result.
+        insert_values = False
+
+    if insert_values:
+      values = [
+          ese_column_definition.identifier, ese_column_definition.name,
+          ese_column_definition.type, table_definition_key]
+      self._database_file.InsertValues(table_name, column_names, values)
+
+  def WriteDatabaseDefinition(self, ese_database_definition):
+    """Writes the database definition.
+
+    Args:
+      ese_database_definition: the database definition (instance of
+                               EseDatabaseDefinition).
+    """
+    table_name = u'database_definitions'
+    column_names = [u'type', u'version']
+
+    has_table = self._database_file.HasTable(table_name)
+    if not has_table:
+      column_definitions = [
+          u'database_definition_key INTEGER PRIMARY KEY AUTOINCREMENT',
+          u'type TEXT', u'version TEXT']
+      self._database_file.CreateTable(table_name, column_definitions)
+      insert_values = True
+
+    else:
+      condition = u'type = "{0:s}" AND version = "{1:s}"'.format(
+          ese_database_definition.type, ese_database_definition.version)
+      values_list = list(self._database_file.GetValues(
+          [table_name], column_names, condition))
+
+      number_of_values = len(values_list)
+      if number_of_values == 0:
+        insert_values = True
+      else:
+        # TODO: check if more than 1 result.
+        insert_values = False
+
+    if insert_values:
+      values = [ese_database_definition.type, ese_database_definition.version]
+      self._database_file.InsertValues(table_name, column_names, values)
+
+  def WriteTableDefinition(self, ese_table_definition):
+    """Writes the table definition.
+
+    Args:
+      ese_table_definition: the table definition (instance of
+                            EseTableDefinition).
+    """
+    table_name = u'table_definitions'
+    column_names = [u'name']
+
+    has_table = self._database_file.HasTable(table_name)
+    if not has_table:
+      column_definitions = [
+          u'table_definition_key INTEGER PRIMARY KEY AUTOINCREMENT',
+          u'name TEXT']
+      self._database_file.CreateTable(table_name, column_definitions)
+      insert_values = True
+
+    else:
+      condition = u'name = "{0:s}"'.format(ese_table_definition.name)
+      values_list = list(self._database_file.GetValues(
+          [table_name], column_names, condition))
+
+      number_of_values = len(values_list)
+      if number_of_values == 0:
+        insert_values = True
+      else:
+        # TODO: check if more than 1 result.
+        insert_values = False
+
+    if insert_values:
+      values = [ese_table_definition.name]
+      self._database_file.InsertValues(table_name, column_names, values)
