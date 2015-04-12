@@ -186,7 +186,7 @@ class EseDbCatalogExtractor(object):
     """Extracts the catalog from the database.
 
     Args:
-      filenale: the name of the file containing the ESE database.
+      filename: the name of the file containing the ESE database.
       output_writer: the output writer (instance of OutputWriter).
     """
     esedb_file = pyesedb.file()
@@ -318,7 +318,7 @@ class StdoutWriter(object):
 
   def Close(self):
     """Closes the output writer object."""
-    pass
+    return
 
   def Open(self, unused_database_type):
     """Opens the output writer object.
