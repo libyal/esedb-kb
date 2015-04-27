@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 """Script to extract an ESE database catalog."""
 
+from __future__ import print_function
 import argparse
 import logging
 import os
@@ -11,11 +12,9 @@ import pyesedb
 
 import database
 
-
-# pylint: disable=superfluous-parens
-
 if pyesedb.get_version() < u'20140406':
   raise ImportWarning(u'extract.py requires pyesedb 20140406 or later.')
+
 
 COLUMN_TYPE_DESCRIPTIONS = {
     pyesedb.column_types.NULL: u'Null',
