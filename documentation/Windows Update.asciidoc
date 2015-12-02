@@ -2,8 +2,6 @@
 Analysis of the Windows Update Services Database
 
 :toc:
-:toc-placement: manual
-:toc-title: 
 :toclevels: 4
 
 :numbered!:
@@ -39,10 +37,6 @@ in the section entitled "GNU Free Documentation License".
 ....
 
 [preface]
-== Table of contents
-toc::[]
-
-[preface]
 == Revision history
 [cols="1,1,1,5",options="header"]
 |===
@@ -55,7 +49,6 @@ toc::[]
 
 :numbered:
 == Overview
-1.  Overview
 Windows Update Services uses the Extensible Storage Engine (ESE) Database File 
 (EDB) format to store its data. Windows Help and Support Services stores its 
 data in a file named:
