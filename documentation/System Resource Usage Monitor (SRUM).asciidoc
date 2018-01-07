@@ -1,4 +1,4 @@
-= Windows Mail database
+= System Resource Usage Monitor (SRUM) database
 
 :toc:
 :toclevels: 4
@@ -6,19 +6,21 @@
 :numbered!:
 [abstract]
 == Summary
-Windows Mail uses the Extensible Storage Engine (ESE) Database File (EDB)
-format to store its folder data. This specification is based on available
-documentation and was enhanced by analyzing test data.
+System Resource Usage Monitor (SRUM) uses the Extensible Storage Engine (ESE)
+Database File (EDB) to store its folder data. SRUM is used to monitor desktop
+application programs, services, Windows applications and network connections.
+This specification is based on available documentation and was enhanced by
+analyzing test data.
 
-This document is intended as a working document for the Windows Mail database
-format specification.
+This document is intended as a working document for the SRUM database format
+specification.
 
 [preface]
 == Document information
 [cols="1,5"]
 |===
 | Author(s): | Joachim Metz <joachim.metz@gmail.com>
-| Abstract: | This document contains information about the Windows Mail database
+| Abstract: | This document contains information about the System Resource Usage Monitor (SRUM) database
 | Classification: | Public
 | Keywords: | Windows Mail, Extensible Storage Engine, ESE, EDB
 |===
@@ -26,7 +28,7 @@ format specification.
 [preface]
 == License
 ....
-Copyright (C) 2009-2018, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2018, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
@@ -39,88 +41,247 @@ in the section entitled "GNU Free Documentation License".
 [cols="1,1,1,5",options="header"]
 |===
 | Version | Author | Date | Comments
-| 0.0.1 | J.B. Metz | November 2009 | Worked on initial version.
-| 0.0.2 | J.B. Metz | June 2010 | Small changes.
-| 0.0.3 | J.B. Metz | August 2012 | Email and license update.
-| 0.0.4 | J.B. Metz | March 2015 | Switched to asciidoc format.
-| 0.0.5 | J.B. Metz | January 2018 | Updated libesedb reference.
+| 0.0.1 | J.B. Metz | January 2018 | Worked on initial version.
 |===
 
 :numbered:
 == Overview
-Windows Mail uses the Extensible Storage Engine (ESE) Database File (EDB)
-format to store its folder data. Windows Mail stores its data in a file named:
+System Resource Usage Monitor (SRUM) uses the Extensible Storage Engine (ESE)
+Database File (EDB) format to store its folder data. SRUM stores its data in
+a file named:
 ....
-%USERPROFILE%\AppData\Local\Microsoft\Windows Mail\WindowsMail.MSMessageStore
+C:\Windows\System32\sru\SRUDB.dat
 ....
 
 For more information about EDB see `[LIBESEDB09]`.
 
-=== Test version
-The following version of programs were used to test the information within this document:
+== SRUM Extensions
 
-* Windows Vista Mail
+....
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\SRUM\Extensions
+....
+
+[cols="1,1,5",options="header"]
+|===
+| Identifier (GUID) | DLL | SRUM Extension
+| {973F5D5C-1D90-4944-BE8E-24B94231A174} | nduprov.dll | Network Data Usage Monitor
+| {97C2CE28-A37B-4920-B1E9-8B76CD341EC5} | |
+| {D10CA2FE-6FCF-4F6D-848E-B2E99266FA86} | wpnsruprov.dll | Push Notifications (WPN) Provider
+| {D10CA2FE-6FCF-4F6D-848E-B2E99266FA89} | appsruprov.dll | Application Resource Usage Provider
+| {DD6636C4-8929-4683-974E-22C046A43763} | ncuprov.dll | Network Connectivity Usage Monitor
+| {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37} | energyprov.dll | Energy Usage Provider
+|===
+
+=== Test version
+
+The following version of programs were used to test the information within
+this document:
+
+* [yellow-background]*TODO: Windows 8*
+* Windows 10
 
 == Tables
-=== Streams
+
+=== SruDbIdMapTable
 
 [cols="1,3,5",options="header"]
 |===
 | Column identifier | Column name | Column type
-| 1 | Id | Integer 32-bit signed
-| 256 | Path | Large text
+| 1 | IdType | Integer 8-bit unsigned
+| 2 | IdIndex | Integer 32-bit signed
+| 256 | IdBlob | Large binary data
 |===
 
-=== UserDataTable
+=== SruDbCheckpointTable
 
 [cols="1,3,5",options="header"]
 |===
 | Column identifier | Column name | Column type
-| 1 | FolderId | Integer 64-bit signed
-| 2 | Id | Integer 32-bit signed
-| 256 | Table | Large text
-| 257 | Data | Large binary data
+| 1 | ProviderId | GUID
+| 2 | CheckpointId | Integer 32-bit signed
+| 3 | NextIncId | Integer 32-bit signed
+| 128 | SeqNumber | Binary data
+| 256 | RecordSet | Large binary data
 |===
 
-=== Folders
+=== {973F5D5C-1D90-4944-BE8E-24B94231A174}
+
+The table named {973F5D5C-1D90-4944-BE8E-24B94231A174} contains Network Data 
+Usage Monitor data.
 
 [cols="1,3,5",options="header"]
 |===
-| 1 | FLDCOL_ID | Integer 64-bit signed
-| 2 | FLDCOL_PARENT | Integer 64-bit signed
-| 3 | FLDCOL_NAMEHASH | Integer 32-bit signed
-| 4 | FLDCOL_FLAGS | Integer 32-bit signed
-| 5 | FLDCOL_MESSAGES | Integer 32-bit signed
-| 6 | FLDCOL_UNREAD | Integer 32-bit signed
-| 7 | FLDCOL_SPECIAL | Integer 8-bit unsigned
-| 8 | FLDCOL_TYPE | Integer 8-bit unsigned
-| 9 | FLDCOL_HIERARCHY | Integer 8-bit unsigned
-| 10 | FLDCOL_LISTSTAMP | Integer 32-bit signed
-| 11 | FLDCOL_SERVERHIGH | Integer 32-bit signed
-| 12 | FLDCOL_SERVERLOW | Integer 32-bit signed
-| 13 | FLDCOL_SERVERCOUNT | Integer 32-bit signed
-| 14 | FLDCOL_CLIENTHIGH | Integer 32-bit signed
-| 15 | FLDCOL_CLIENTLOW | Integer 32-bit signed
-| 16 | FLDCOL_NOTDOWNLOADED | Integer 32-bit signed
-| 17 | FLDCOL_THREADUNREAD | Integer 32-bit signed
-| 18 | FLDCOL_VIEWUNREAD | Integer 32-bit signed
-| 19 | FLDCOL_STATUSMSGDELTA | Integer 32-bit signed
-| 20 | FLDCOL_STATUSUNREADDELTA | Integer 32-bit signed
-| 21 | FLDCOL_WATCHEDHIGH | Integer 32-bit signed
-| 22 | FLDCOL_WATCHEDUNREAD | Integer 32-bit signed
-| 23 | FLDCOL_WATCHED | Integer 32-bit signed
-| 24 | FLDCOL_SUBSCRIBED | Integer 8-bit unsigned
-| 25 | FLDCOL_IGNORED | Integer 32-bit signed
-| 128 | FLDCOL_COMMUNITYREFRESH | Binary data
-| 256 | FLDCOL_NAME | Large text
-| 257 | FLDCOL_NAMEW | Large text
-| 258 | FLDCOL_FILE | Large text
-| 259 | FLDCOL_DESCRIPTION | Large text
-| 260 | FLDCOL_ACCOUNTID | Large text
-| 261 | FLDCOL_REQUESTED | Large binary data
-| 262 | FLDCOL_URLCOMPONENT | Large text
-| 263 | FLDCOL_READ | Large binary data
-| 264 | FLDCOL_PATH | Large text
+| Column identifier | Column name | Column type
+| 1 | AutoIncId | Integer 32-bit signed
+| 2 | TimeStamp | Date and time +
+Contains an OLE Automation date (or floatingtime or application time) value
+| 3 | AppId | Integer 32-bit signed
+| 4 | UserId | Integer 32-bit signed
+| 5 | InterfaceLuid | Integer 64-bit signed
+| 6 | L2ProfileId | Integer 32-bit signed
+| 7 | L2ProfileFlags | Integer 32-bit signed
+| 8 | BytesSent | Integer 64-bit signed
+| 9 | BytesRecvd | Integer 64-bit signed
+|===
+
+=== {D10CA2FE-6FCF-4F6D-848E-B2E99266FA89}
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | AutoIncId | Integer 32-bit signed
+| 2 | TimeStamp | Date and time
+| 3 | AppId | Integer 32-bit signed
+| 4 | UserId | Integer 32-bit signed
+| 5 | ForegroundCycleTime | Integer 64-bit signed
+| 6 | BackgroundCycleTime | Integer 64-bit signed
+| 7 | FaceTime | Integer 64-bit signed
+| 8 | ForegroundContextSwitches | Integer 32-bit signed
+| 9 | BackgroundContextSwitches | Integer 32-bit signed
+| 10 | ForegroundBytesRead | Integer 64-bit signed
+| 11 | ForegroundBytesWritten | Integer 64-bit signed
+| 12 | ForegroundNumReadOperations | Integer 32-bit signed
+| 13 | ForegroundNumWriteOperations | Integer 32-bit signed
+| 14 | ForegroundNumberOfFlushes | Integer 32-bit signed
+| 15 | BackgroundBytesRead | Integer 64-bit signed
+| 16 | BackgroundBytesWritten | Integer 64-bit signed
+| 17 | BackgroundNumReadOperations | Integer 32-bit signed
+| 18 | BackgroundNumWriteOperations | Integer 32-bit signed
+| 19 | BackgroundNumberOfFlushes | Integer 32-bit signed
+|===
+
+=== {DA73FB89-2BEA-4DDC-86B8-6E048C6DA477}
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | AutoIncId | Integer 32-bit signed
+| 2 | TimeStamp | Date and time
+| 3 | AppId | Integer 32-bit signed
+| 4 | UserId | Integer 32-bit signed
+| 128 | BinaryData | Binary data
+|===
+
+=== {DD6636C4-8929-4683-974E-22C046A43763}
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | AutoIncId | Integer 32-bit signed
+| 2 | TimeStamp | Date and time
+| 3 | AppId | Integer 32-bit signed
+| 4 | UserId | Integer 32-bit signed
+| 5 | InterfaceLuid | Integer 64-bit signed
+| 6 | L2ProfileId | Integer 32-bit signed
+| 7 | ConnectedTime | Integer 32-bit signed
+| 8 | ConnectStartTime | Integer 64-bit signed
+| 9 | L2ProfileFlags | Integer 32-bit signed
+|===
+
+=== {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37}
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | AutoIncId | Integer 32-bit signed
+| 2 | TimeStamp | Date and time
+| 3 | AppId | Integer 32-bit signed
+| 4 | UserId | Integer 32-bit signed
+| 5 | EventTimestamp | Integer 64-bit signed
+| 6 | StateTransition | Integer 32-bit signed
+| 7 | DesignedCapacity | Integer 32-bit signed
+| 8 | FullChargedCapacity | Integer 32-bit signed
+| 9 | ChargeLevel | Integer 32-bit signed
+| 10 | CycleCount | Integer 32-bit signed
+| 11 | ConfigurationHash | Integer 64-bit signed
+|===
+
+=== {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37}LT
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | AutoIncId | Integer 32-bit signed
+| 2 | TimeStamp | Date and time
+| 3 | AppId | Integer 32-bit signed
+| 4 | UserId | Integer 32-bit signed
+| 5 | ActiveAcTime | Integer 32-bit signed
+| 6 | CsAcTime | Integer 32-bit signed
+| 7 | ActiveDcTime | Integer 32-bit signed
+| 8 | CsDcTime | Integer 32-bit signed
+| 9 | ActiveDischargeTime | Integer 32-bit signed
+| 10 | CsDischargeTime | Integer 32-bit signed
+| 11 | ActiveEnergy | Integer 32-bit signed
+| 12 | CsEnergy | Integer 32-bit signed
+| 13 | DesignedCapacity | Integer 32-bit signed
+| 14 | FullChargedCapacity | Integer 32-bit signed
+| 15 | CycleCount | Integer 32-bit signed
+| 16 | ConfigurationHash | Integer 64-bit signed
+|===
+
+=== {D10CA2FE-6FCF-4F6D-848E-B2E99266FA86}
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | AutoIncId | Integer 32-bit signed
+| 2 | TimeStamp | Date and time
+| 3 | AppId | Integer 32-bit signed
+| 4 | UserId | Integer 32-bit signed
+| 5 | NotificationType | Integer 32-bit signed
+| 6 | PayloadSize | Integer 32-bit signed
+| 7 | NetworkType | Integer 32-bit signed
+|===
+
+=== {5C8CF1C7-7257-4F13-B223-970EF5939312}
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | AutoIncId | Integer 32-bit signed
+| 2 | TimeStamp | Date and time
+| 3 | AppId | Integer 32-bit signed
+| 4 | UserId | Integer 32-bit signed
+| 5 | Flags | Integer 32-bit signed
+| 6 | EndTime | Integer 64-bit signed
+| 7 | DurationMS | Integer 32-bit signed
+| 8 | SpanMS | Integer 32-bit signed
+| 9 | TimelineEnd | Integer 32-bit signed
+| 10 | InFocusTimeline | Integer 64-bit signed
+| 11 | UserInputTimeline | Integer 64-bit signed
+| 12 | CompRenderedTimeline | Integer 64-bit signed
+| 13 | CompDirtiedTimeline | Integer 64-bit signed
+| 14 | CompPropagatedTimeline | Integer 64-bit signed
+| 15 | AudioInTimeline | Integer 64-bit signed
+| 16 | AudioOutTimeline | Integer 64-bit signed
+| 17 | CpuTimeline | Integer 64-bit signed
+| 18 | DiskTimeline | Integer 64-bit signed
+| 19 | NetworkTimeline | Integer 64-bit signed
+| 20 | MBBTimeline | Integer 64-bit signed
+| 21 | InFocusS | Integer 32-bit signed
+| 22 | PSMForegroundS | Integer 32-bit signed
+| 23 | UserInputS | Integer 32-bit signed
+| 24 | CompRenderedS | Integer 32-bit signed
+| 25 | CompDirtiedS | Integer 32-bit signed
+| 26 | CompPropagatedS | Integer 32-bit signed
+| 27 | AudioInS | Integer 32-bit signed
+| 28 | AudioOutS | Integer 32-bit signed
+| 29 | Cycles | Integer 64-bit signed
+| 30 | CyclesBreakdown | Integer 64-bit signed
+| 31 | CyclesAttr | Integer 64-bit signed
+| 32 | CyclesAttrBreakdown | Integer 64-bit signed
+| 33 | CyclesWOB | Integer 64-bit signed
+| 34 | CyclesWOBBreakdown | Integer 64-bit signed
+| 35 | DiskRaw | Integer 64-bit signed
+| 36 | NetworkTailRaw | Integer 64-bit signed
+| 37 | NetworkBytesRaw | Integer 64-bit signed
+| 38 | MBBTailRaw | Integer 64-bit signed
+| 39 | MBBBytesRaw | Integer 64-bit signed
+| 40 | DisplayRequiredS | Integer 32-bit signed
+| 41 | DisplayRequiredTimeline | Integer 64-bit signed
+| 42 | KeyboardInputTimeline | Integer 64-bit signed
+| 43 | KeyboardInputS | Integer 32-bit signed
+| 44 | MouseInputS | Integer 32-bit signed
 |===
 
 :numbered!:
@@ -135,6 +296,15 @@ The following version of programs were used to test the information within this 
 | Author(s): | Joachim Metz
 | Date: | September 2009
 | URL: | https://github.com/libyal/libesedb/blob/master/documentation/Extensible%20Storage%20Engine%20(ESE)%20Database%20File%20(EDB)%20format.asciidoc
+|===
+
+`[KHATRI]`
+
+[cols="1,5",options="header"]
+|===
+| Title: | SRUM forensics
+| Author(s): | Yogesh Khatri
+| URL: | https://www.sans.org/summit-archives/file/summit-archive-1492184583.pdf
 |===
 
 [appendix]
