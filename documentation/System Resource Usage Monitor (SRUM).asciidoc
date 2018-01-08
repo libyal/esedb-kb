@@ -65,12 +65,17 @@ HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\SRUM\Extensions
 |===
 | Identifier (GUID) | DLL | SRUM Extension
 | {973F5D5C-1D90-4944-BE8E-24B94231A174} | nduprov.dll | Network Data Usage Monitor
-| {97C2CE28-A37B-4920-B1E9-8B76CD341EC5} | |
 | {D10CA2FE-6FCF-4F6D-848E-B2E99266FA86} | wpnsruprov.dll | Push Notifications (WPN) Provider
 | {D10CA2FE-6FCF-4F6D-848E-B2E99266FA89} | appsruprov.dll | Application Resource Usage Provider
+| {DA73FB89-2BEA-4DDC-86B8-6E048C6DA477} | |
 | {DD6636C4-8929-4683-974E-22C046A43763} | ncuprov.dll | Network Connectivity Usage Monitor
 | {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37} | energyprov.dll | Energy Usage Provider
 |===
+
+....
+TODO: sources indicate that the following SRUM Extensions exist:
+97C2CE28-A37B-4920-B1E9-8B76CD341EC5
+....
 
 === Test version
 
@@ -126,6 +131,9 @@ Contains an OLE Automation date (or floatingtime or application time) value
 
 === {D10CA2FE-6FCF-4F6D-848E-B2E99266FA89}
 
+The table named {D10CA2FE-6FCF-4F6D-848E-B2E99266FA89} contains Application
+Resource Usage data.
+
 [cols="1,3,5",options="header"]
 |===
 | Column identifier | Column name | Column type
@@ -152,6 +160,8 @@ Contains an OLE Automation date (or floatingtime or application time) value
 
 === {DA73FB89-2BEA-4DDC-86B8-6E048C6DA477}
 
+* [yellow-background]*TODO: add description*
+
 [cols="1,3,5",options="header"]
 |===
 | Column identifier | Column name | Column type
@@ -163,6 +173,9 @@ Contains an OLE Automation date (or floatingtime or application time) value
 |===
 
 === {DD6636C4-8929-4683-974E-22C046A43763}
+
+The table named {DD6636C4-8929-4683-974E-22C046A43763} contains Network
+Connectivity Usage Monitor data.
 
 [cols="1,3,5",options="header"]
 |===
@@ -179,6 +192,8 @@ Contains an OLE Automation date (or floatingtime or application time) value
 |===
 
 === {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37}
+
+* [yellow-background]*TODO: add description*
 
 [cols="1,3,5",options="header"]
 |===
@@ -197,6 +212,8 @@ Contains an OLE Automation date (or floatingtime or application time) value
 |===
 
 === {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37}LT
+
+* [yellow-background]*TODO: add description*
 
 [cols="1,3,5",options="header"]
 |===
@@ -221,6 +238,8 @@ Contains an OLE Automation date (or floatingtime or application time) value
 
 === {D10CA2FE-6FCF-4F6D-848E-B2E99266FA86}
 
+* [yellow-background]*TODO: add description*
+
 [cols="1,3,5",options="header"]
 |===
 | Column identifier | Column name | Column type
@@ -234,6 +253,8 @@ Contains an OLE Automation date (or floatingtime or application time) value
 |===
 
 === {5C8CF1C7-7257-4F13-B223-970EF5939312}
+
+* [yellow-background]*TODO: add description*
 
 [cols="1,3,5",options="header"]
 |===
