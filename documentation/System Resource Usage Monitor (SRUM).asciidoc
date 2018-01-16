@@ -138,7 +138,8 @@ Resource Usage data.
 |===
 | Column identifier | Column name | Column type
 | 1 | AutoIncId | Integer 32-bit signed
-| 2 | TimeStamp | Date and time
+| 2 | TimeStamp | Date and time +
+Contains an OLE Automation date (or floatingtime or application time) value
 | 3 | AppId | Integer 32-bit signed
 | 4 | UserId | Integer 32-bit signed
 | 5 | ForegroundCycleTime | Integer 64-bit signed
@@ -166,7 +167,8 @@ Resource Usage data.
 |===
 | Column identifier | Column name | Column type
 | 1 | AutoIncId | Integer 32-bit signed
-| 2 | TimeStamp | Date and time
+| 2 | TimeStamp | Date and time +
+Contains an OLE Automation date (or floatingtime or application time) value
 | 3 | AppId | Integer 32-bit signed
 | 4 | UserId | Integer 32-bit signed
 | 128 | BinaryData | Binary data
@@ -181,13 +183,15 @@ Connectivity Usage Monitor data.
 |===
 | Column identifier | Column name | Column type
 | 1 | AutoIncId | Integer 32-bit signed
-| 2 | TimeStamp | Date and time
+| 2 | TimeStamp | Date and time +
+Contains an OLE Automation date (or floatingtime or application time) value
 | 3 | AppId | Integer 32-bit signed
 | 4 | UserId | Integer 32-bit signed
 | 5 | InterfaceLuid | Integer 64-bit signed
 | 6 | L2ProfileId | Integer 32-bit signed
 | 7 | ConnectedTime | Integer 32-bit signed
-| 8 | ConnectStartTime | Integer 64-bit signed
+| 8 | ConnectStartTime | Integer 64-bit signed +
+Contains a FILETIME value 
 | 9 | L2ProfileFlags | Integer 32-bit signed
 |===
 
@@ -199,7 +203,8 @@ Connectivity Usage Monitor data.
 |===
 | Column identifier | Column name | Column type
 | 1 | AutoIncId | Integer 32-bit signed
-| 2 | TimeStamp | Date and time
+| 2 | TimeStamp | Date and time +
+Contains an OLE Automation date (or floatingtime or application time) value
 | 3 | AppId | Integer 32-bit signed
 | 4 | UserId | Integer 32-bit signed
 | 5 | EventTimestamp | Integer 64-bit signed
@@ -219,7 +224,8 @@ Connectivity Usage Monitor data.
 |===
 | Column identifier | Column name | Column type
 | 1 | AutoIncId | Integer 32-bit signed
-| 2 | TimeStamp | Date and time
+| 2 | TimeStamp | Date and time +
+Contains an OLE Automation date (or floatingtime or application time) value
 | 3 | AppId | Integer 32-bit signed
 | 4 | UserId | Integer 32-bit signed
 | 5 | ActiveAcTime | Integer 32-bit signed
@@ -244,7 +250,8 @@ Connectivity Usage Monitor data.
 |===
 | Column identifier | Column name | Column type
 | 1 | AutoIncId | Integer 32-bit signed
-| 2 | TimeStamp | Date and time
+| 2 | TimeStamp | Date and time +
+Contains an OLE Automation date (or floatingtime or application time) value
 | 3 | AppId | Integer 32-bit signed
 | 4 | UserId | Integer 32-bit signed
 | 5 | NotificationType | Integer 32-bit signed
@@ -260,7 +267,8 @@ Connectivity Usage Monitor data.
 |===
 | Column identifier | Column name | Column type
 | 1 | AutoIncId | Integer 32-bit signed
-| 2 | TimeStamp | Date and time
+| 2 | TimeStamp | Date and time +
+Contains an OLE Automation date (or floatingtime or application time) value
 | 3 | AppId | Integer 32-bit signed
 | 4 | UserId | Integer 32-bit signed
 | 5 | Flags | Integer 32-bit signed
