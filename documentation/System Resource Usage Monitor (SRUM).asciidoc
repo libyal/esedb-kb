@@ -94,7 +94,23 @@ this document:
 | Column identifier | Column name | Column type
 | 1 | IdType | Integer 8-bit unsigned
 | 2 | IdIndex | Integer 32-bit signed
-| 256 | IdBlob | Large binary data
+| 256 | IdBlob | Large binary data +
+Contents of this value depends on the value of IdType
+|===
+
+==== IdType
+
+[cols="1,1,5",options="header"]
+|===
+| Value | Identifier | Description
+| 0 | | [yellow-background]*Unknown* +
+IdBlob contains an UTF-16 encoded string
+| 1 | | [yellow-background]*Unknown* +
+IdBlob contains an UTF-16 encoded string
+| 2 | | [yellow-background]*Unknown* +
+IdBlob contains an UTF-16 encoded string
+| 3 | | [yellow-background]*Unknown* +
+IdBlob contains a Windows NT Security Identifier (SID)
 |===
 
 === SruDbCheckpointTable
