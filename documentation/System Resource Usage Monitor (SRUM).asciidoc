@@ -109,7 +109,7 @@ IdBlob contains an UTF-16 encoded string
 IdBlob contains an UTF-16 encoded string
 | 2 | | [yellow-background]*Unknown* +
 IdBlob contains an UTF-16 encoded string
-| 3 | | [yellow-background]*Unknown* +
+| 3 | | a user identifier (UserId) +
 IdBlob contains a Windows NT Security Identifier (SID)
 |===
 
@@ -136,8 +136,10 @@ Usage Monitor data.
 | 1 | AutoIncId | Integer 32-bit signed
 | 2 | TimeStamp | Date and time +
 Contains an OLE Automation date (or floatingtime or application time) value
-| 3 | AppId | Integer 32-bit signed
-| 4 | UserId | Integer 32-bit signed
+| 3 | AppId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
+| 4 | UserId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
 | 5 | InterfaceLuid | Integer 64-bit signed
 | 6 | L2ProfileId | Integer 32-bit signed
 | 7 | L2ProfileFlags | Integer 32-bit signed
@@ -156,8 +158,10 @@ Resource Usage data.
 | 1 | AutoIncId | Integer 32-bit signed
 | 2 | TimeStamp | Date and time +
 Contains an OLE Automation date (or floatingtime or application time) value
-| 3 | AppId | Integer 32-bit signed
-| 4 | UserId | Integer 32-bit signed
+| 3 | AppId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
+| 4 | UserId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
 | 5 | ForegroundCycleTime | Integer 64-bit signed
 | 6 | BackgroundCycleTime | Integer 64-bit signed
 | 7 | FaceTime | Integer 64-bit signed
@@ -185,8 +189,10 @@ Contains an OLE Automation date (or floatingtime or application time) value
 | 1 | AutoIncId | Integer 32-bit signed
 | 2 | TimeStamp | Date and time +
 Contains an OLE Automation date (or floatingtime or application time) value
-| 3 | AppId | Integer 32-bit signed
-| 4 | UserId | Integer 32-bit signed
+| 3 | AppId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
+| 4 | UserId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
 | 128 | BinaryData | Binary data
 |===
 
@@ -201,8 +207,10 @@ Connectivity Usage Monitor data.
 | 1 | AutoIncId | Integer 32-bit signed
 | 2 | TimeStamp | Date and time +
 Contains an OLE Automation date (or floatingtime or application time) value
-| 3 | AppId | Integer 32-bit signed
-| 4 | UserId | Integer 32-bit signed
+| 3 | AppId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
+| 4 | UserId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
 | 5 | InterfaceLuid | Integer 64-bit signed
 | 6 | L2ProfileId | Integer 32-bit signed
 | 7 | ConnectedTime | Integer 32-bit signed
@@ -221,8 +229,10 @@ Contains a FILETIME value
 | 1 | AutoIncId | Integer 32-bit signed
 | 2 | TimeStamp | Date and time +
 Contains an OLE Automation date (or floatingtime or application time) value
-| 3 | AppId | Integer 32-bit signed
-| 4 | UserId | Integer 32-bit signed
+| 3 | AppId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
+| 4 | UserId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
 | 5 | EventTimestamp | Integer 64-bit signed
 | 6 | StateTransition | Integer 32-bit signed
 | 7 | DesignedCapacity | Integer 32-bit signed
@@ -242,8 +252,10 @@ Contains an OLE Automation date (or floatingtime or application time) value
 | 1 | AutoIncId | Integer 32-bit signed
 | 2 | TimeStamp | Date and time +
 Contains an OLE Automation date (or floatingtime or application time) value
-| 3 | AppId | Integer 32-bit signed
-| 4 | UserId | Integer 32-bit signed
+| 3 | AppId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
+| 4 | UserId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
 | 5 | ActiveAcTime | Integer 32-bit signed
 | 6 | CsAcTime | Integer 32-bit signed
 | 7 | ActiveDcTime | Integer 32-bit signed
@@ -268,8 +280,10 @@ Contains an OLE Automation date (or floatingtime or application time) value
 | 1 | AutoIncId | Integer 32-bit signed
 | 2 | TimeStamp | Date and time +
 Contains an OLE Automation date (or floatingtime or application time) value
-| 3 | AppId | Integer 32-bit signed
-| 4 | UserId | Integer 32-bit signed
+| 3 | AppId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
+| 4 | UserId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
 | 5 | NotificationType | Integer 32-bit signed
 | 6 | PayloadSize | Integer 32-bit signed
 | 7 | NetworkType | Integer 32-bit signed
@@ -285,8 +299,10 @@ Contains an OLE Automation date (or floatingtime or application time) value
 | 1 | AutoIncId | Integer 32-bit signed
 | 2 | TimeStamp | Date and time +
 Contains an OLE Automation date (or floatingtime or application time) value
-| 3 | AppId | Integer 32-bit signed
-| 4 | UserId | Integer 32-bit signed
+| 3 | AppId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
+| 4 | UserId | Integer 32-bit signed +
+Contains an IdIndex value that maps an entry in SruDbIdMapTable
 | 5 | Flags | Integer 32-bit signed
 | 6 | EndTime | Integer 64-bit signed
 | 7 | DurationMS | Integer 32-bit signed
