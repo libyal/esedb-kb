@@ -57,7 +57,7 @@ For more information about EDB see `[LIBESEDB09]`.
 
 == SRUM Extensions
 
-The SRUM extension DLL paths are define under the Windows Registry key:
+The SRUM extension DLL paths are defined under the Windows Registry key:
 
 ....
 HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\WindowsNT\CurrentVersion\SRUM\Extensions
@@ -181,7 +181,8 @@ Contains an IdIndex value that maps an entry in SruDbIdMapTable
 
 === {DA73FB89-2BEA-4DDC-86B8-6E048C6DA477}
 
-* [yellow-background]*TODO: add description*
+The table named {DA73FB89-2BEA-4DDC-86B8-6E048C6DA477} contains Energy Estimator
+data.
 
 [cols="1,3,5",options="header"]
 |===
@@ -221,7 +222,8 @@ Contains a FILETIME value
 
 === {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37}
 
-* [yellow-background]*TODO: add description*
+The table named {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37} contains Energy Usage
+data.
 
 [cols="1,3,5",options="header"]
 |===
@@ -245,6 +247,9 @@ Contains an IdIndex value that maps an entry in SruDbIdMapTable
 === {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37}LT
 
 * [yellow-background]*TODO: add description*
+
+The table named {FEE4E14F-02A9-4550-B5CE-5FA2DA202E37}LT contains long-term
+Energy Usage data.
 
 [cols="1,3,5",options="header"]
 |===
