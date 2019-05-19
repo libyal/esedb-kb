@@ -9,13 +9,21 @@ L2TBINARIES_DEPENDENCIES="libesedb pysqlite";
 
 L2TBINARIES_TEST_DEPENDENCIES="funcsigs mock pbr six";
 
-PYTHON2_DEPENDENCIES="libesedb-python python-pysqlite2";
+DPKG_PYTHON2_DEPENDENCIES="libesedb-python python-pysqlite2";
 
-PYTHON2_TEST_DEPENDENCIES="python-coverage python-mock python-tox";
+DPKG_PYTHON2_TEST_DEPENDENCIES="python-coverage python-funcsigs python-mock python-pbr python-setuptools python-six";
 
-PYTHON3_DEPENDENCIES="libesedb-python3";
+DPKG_PYTHON3_DEPENDENCIES="libesedb-python3";
 
-PYTHON3_TEST_DEPENDENCIES="python3-mock python3-setuptools python3-tox";
+DPKG_PYTHON3_TEST_DEPENDENCIES="python3-distutils python3-mock python3-pbr python3-setuptools python3-six";
+
+RPM_PYTHON2_DEPENDENCIES="libesedb-python python2-sqlite3dbm";
+
+RPM_PYTHON2_TEST_DEPENDENCIES="python2-funcsigs python2-mock python2-pbr python2-setuptools python2-six";
+
+RPM_PYTHON3_DEPENDENCIES="libesedb-python3";
+
+RPM_PYTHON3_TEST_DEPENDENCIES="python3-mock python3-pbr python3-setuptools python3-six";
 
 # Exit on error.
 set -e;
@@ -42,21 +50,98 @@ then
 		sudo /usr/bin/hdiutil detach /Volumes/${PACKAGE}-*.pkg
 	done
 
-elif test ${TRAVIS_OS_NAME} = "linux";
+elif test -n "${FEDORA_VERSION}";
 then
-	sudo rm -f /etc/apt/sources.list.d/travis_ci_zeromq3-source.list;
+	CONTAINER_NAME="fedora${FEDORA_VERSION}";
 
-	sudo add-apt-repository ppa:gift/dev -y;
-	sudo apt-get update -q;
+	docker pull registry.fedoraproject.org/fedora:${FEDORA_VERSION};
 
-	if test ${TRAVIS_PYTHON_VERSION} = "2.7";
+	docker run --name=${CONTAINER_NAME} --detach -i registry.fedoraproject.org/fedora:${FEDORA_VERSION};
+
+	# Install dnf-plugins-core.
+	docker exec ${CONTAINER_NAME} dnf install -y dnf-plugins-core;
+
+	# Add additional dnf repositories.
+	docker exec ${CONTAINER_NAME} dnf copr -y enable @gift/dev;
+
+	if test -n "${TOXENV}";
 	then
-		sudo apt-get install -y ${PYTHON2_DEPENDENCIES} ${PYTHON2_TEST_DEPENDENCIES};
+		RPM_PACKAGES="python3-tox";
+
 	else
-		sudo apt-get install -y ${PYTHON3_DEPENDENCIES} ${PYTHON3_TEST_DEPENDENCIES};
+		RPM_PACKAGES="";
+
+		if test ${TARGET} = "pylint";
+		then
+			RPM_PACKAGES="${RPM_PACKAGES} findutils pylint";
+		fi
+		if test ${TRAVIS_PYTHON_VERSION} = "2.7";
+		then
+			RPM_PACKAGES="${RPM_PACKAGES} python2 ${RPM_PYTHON2_DEPENDENCIES} ${RPM_PYTHON2_TEST_DEPENDENCIES}";
+		else
+			RPM_PACKAGES="${RPM_PACKAGES} python3 ${RPM_PYTHON3_DEPENDENCIES} ${RPM_PYTHON3_TEST_DEPENDENCIES}";
+		fi
 	fi
-	if test ${TARGET} = "pylint";
+	docker exec ${CONTAINER_NAME} dnf install -y ${RPM_PACKAGES};
+
+	docker cp ../esedb-kb ${CONTAINER_NAME}:/
+
+elif test -n "${UBUNTU_VERSION}";
+then
+	CONTAINER_NAME="ubuntu${UBUNTU_VERSION}";
+
+	docker pull ubuntu:${UBUNTU_VERSION};
+
+	docker run --name=${CONTAINER_NAME} --detach -i ubuntu:${UBUNTU_VERSION};
+
+	# Install add-apt-repository and locale-gen.
+	docker exec ${CONTAINER_NAME} apt-get update -q;
+	docker exec -e "DEBIAN_FRONTEND=noninteractive" ${CONTAINER_NAME} sh -c "apt-get install -y locales software-properties-common";
+
+	# Add additional apt repositories.
+	if test -n "${TOXENV}";
 	then
-		sudo apt-get install -y pylint;
+		docker exec ${CONTAINER_NAME} add-apt-repository universe;
+		docker exec ${CONTAINER_NAME} add-apt-repository ppa:deadsnakes/ppa -y;
+
+	elif test ${TARGET} = "pylint";
+	then
+		docker exec ${CONTAINER_NAME} add-apt-repository ppa:gift/pylint3 -y;
 	fi
+	docker exec ${CONTAINER_NAME} add-apt-repository ppa:gift/dev -y;
+
+	docker exec ${CONTAINER_NAME} apt-get update -q;
+
+	# Set locale to US English and UTF-8.
+	docker exec ${CONTAINER_NAME} locale-gen en_US.UTF-8;
+
+	# Install packages.
+	if test -n "${TOXENV}";
+	then
+		DPKG_PACKAGES="build-essential python${TRAVIS_PYTHON_VERSION} python${TRAVIS_PYTHON_VERSION}-dev tox";
+	else
+		DPKG_PACKAGES="";
+
+		if test "${TARGET}" = "coverage";
+		then
+			DPKG_PACKAGES="${DPKG_PACKAGES} curl git";
+
+		elif test "${TARGET}" = "jenkins2" || test "${TARGET}" = "jenkins3";
+		then
+			DPKG_PACKAGES="${DPKG_PACKAGES} sudo";
+
+		elif test ${TARGET} = "pylint";
+		then
+			DPKG_PACKAGES="${DPKG_PACKAGES} python3-distutils pylint";
+		fi
+		if test ${TRAVIS_PYTHON_VERSION} = "2.7";
+		then
+			DPKG_PACKAGES="${DPKG_PACKAGES} python ${DPKG_PYTHON2_DEPENDENCIES} ${DPKG_PYTHON2_TEST_DEPENDENCIES}";
+		else
+			DPKG_PACKAGES="${DPKG_PACKAGES} python3 ${DPKG_PYTHON3_DEPENDENCIES} ${DPKG_PYTHON3_TEST_DEPENDENCIES}";
+		fi
+	fi
+	docker exec -e "DEBIAN_FRONTEND=noninteractive" ${CONTAINER_NAME} sh -c "apt-get install -y ${DPKG_PACKAGES}";
+
+	docker cp ../esedb-kb ${CONTAINER_NAME}:/
 fi

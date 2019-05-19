@@ -92,8 +92,7 @@ class Sqlite3DatabaseFile(object):
 
     for row in self._cursor:
       values = {}
-      for column_index in range(0, len(column_names)):
-        column_name = column_names[column_index]
+      for column_index, column_name in enumerate(column_names):
         values[column_name] = row[column_index]
       yield values
 
@@ -240,6 +239,7 @@ class Sqlite3DatabaseWriter(object):
       bool: True if successful or False if not.
     """
     self._database_file.Open(filename)
+    return True
 
 
 class EseDbCatalogSqlite3DatabaseWriter(Sqlite3DatabaseWriter):
@@ -266,7 +266,7 @@ class EseDbCatalogSqlite3DatabaseWriter(Sqlite3DatabaseWriter):
 
     number_of_values = len(values_list)
     if number_of_values == 0:
-      return
+      return None
 
     if number_of_values == 1:
       values = values_list[0]
@@ -294,7 +294,7 @@ class EseDbCatalogSqlite3DatabaseWriter(Sqlite3DatabaseWriter):
 
     number_of_values = len(values_list)
     if number_of_values == 0:
-      return
+      return None
 
     if number_of_values == 1:
       values = values_list[0]

@@ -163,6 +163,9 @@ class TableOverlay(object):
 
     Args:
       column_overlay (ColumnOverlay): column overlay.
+
+    Raises:
+      KeyError: if the column overlay is already set.
     """
     if column_overlay.comparable in self._column_overlays:
       raise KeyError('Column overlay: {0:s} already set.'.format(
@@ -320,7 +323,7 @@ class StdoutWriter(object):
     """Closes the output writer object."""
     return
 
-  def Open(self, unused_database_type):
+  def Open(self, database_type):  # pylint: disable=unused-argument
     """Opens the output writer object.
 
     Args:
