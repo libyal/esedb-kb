@@ -9,8 +9,9 @@
 *.pyo
 
 # Specific auto-generated build files
+/.tox
 /__pycache__
 /build
 /dist
-/esedb-kb.egg-info
+/esedbrc.egg-info
 
