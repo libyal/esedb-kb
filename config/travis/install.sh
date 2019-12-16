@@ -13,7 +13,7 @@ DPKG_PYTHON3_DEPENDENCIES="libesedb-python3";
 
 DPKG_PYTHON3_TEST_DEPENDENCIES="python3-distutils python3-mock python3-pbr python3-setuptools python3-six";
 
-RPM_PYTHON2_DEPENDENCIES="libesedb-python python2-sqlite3dbm";
+RPM_PYTHON2_DEPENDENCIES="libesedb-python python2-pysqlite";
 
 RPM_PYTHON2_TEST_DEPENDENCIES="python2-funcsigs python2-mock python2-pbr python2-setuptools python2-six";
 
