@@ -7,6 +7,7 @@ Analysis of the Windows Search Database
 :numbered!:
 [abstract]
 == Summary
+
 Windows Search uses the Extensible Storage Engine (ESE) Database File (EDB)
 format to store its data. This specification is based on reverse engineering.
 
@@ -16,6 +17,7 @@ to be able to process this file type.
 
 [preface]
 == Document information
+
 [cols="1,5"]
 |===
 | Author(s): | Joachim Metz <joachim.metz@gmail.com>
@@ -26,8 +28,9 @@ to be able to process this file type.
 
 [preface]
 == License
+
 ....
-Copyright (C) 2009-2018, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2009-2019, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
@@ -37,6 +40,7 @@ in the section entitled "GNU Free Documentation License".
 
 [preface]
 == Revision history
+
 [cols="1,1,1,5",options="header"]
 |===
 | Version | Author | Date | Comments
@@ -56,10 +60,12 @@ License update.
 | 0.0.9 | J.B. Metz | April 2014 | Small changes.
 | 0.0.10 | J.B. Metz | March 2015 | Switched to asciidoc format.
 | 0.0.11 | J.B. Metz | January 2018 | Updated libesedb reference.
+| 0.0.12 | J.B. Metz | December 2019 | Changes regarding compression.
 |===
 
 :numbered:
 == Overview
+
 Windows Search uses the Extensible Storage Engine (ESE) Database File (EDB)
 format to store its data. Windows Search stores its data in a directory named:
 ....
@@ -129,6 +135,7 @@ merge operations.
 
 
 === Test version
+
 The following version of programs were used to test the information within this
 document:
 
@@ -137,7 +144,9 @@ document:
 * Windows 7 Search
 
 == Tables
+
 === `__NameTable__`
+
 The `__NameTable__` contains information about the Windows Search application.
 
 [cols="1,3,5",options="header"]
@@ -154,6 +163,7 @@ The `__NameTable__` contains information about the Windows Search application.
 |===
 
 === CatalogManager_Properties
+
 ==== Windows 8 Search
 
 [cols="1,3,5",options="header"]
@@ -165,6 +175,7 @@ The `__NameTable__` contains information about the Windows Search application.
 |===
 
 === CatalogStorageManager
+
 ==== Windows 8 Search
 
 [cols="1,3,5",options="header"]
@@ -176,7 +187,9 @@ The `__NameTable__` contains information about the Windows Search application.
 |===
 
 === SystemIndex_0A
+
 ==== Windows XP Search
+
 Most of the binary values in the Windows XP Search database are stored in
 big-endian.
 
@@ -572,6 +585,7 @@ Contains big-endian FILETIME
 |===
 
 ==== Windows Vista Search
+
 Most of the binary values in the Windows Vista Search database are stored in
 little-endian.
 
@@ -996,6 +1010,7 @@ Contains a compressed string
 |===
 
 ==== Windows 7 Search
+
 Most of the binary values in the Windows 7 Search database are stored in
 big-endian.
 
@@ -1396,6 +1411,7 @@ Contains 64-bit big-endian integer value
 |===
 
 === SystemIndex_0P
+
 The SystemIndex_0P contains information about the columns in the SystemIndex_0A table.
 
 ==== Windows XP, Vista and 7 Search
@@ -1421,6 +1437,7 @@ String containing the column name
 |===
 
 === SystemIndex_1_Properties
+
 ==== Windows 8 Search
 
 [cols="1,3,5",options="header"]
@@ -1432,6 +1449,7 @@ String containing the column name
 |===
 
 === SystemIndex_1
+
 ==== Windows 8 Search
 
 [cols="1,3,5",options="header"]
@@ -1442,6 +1460,7 @@ String containing the column name
 |===
 
 === SystemIndex_DeletedDocIds
+
 Contains the deleted document identifiers.
 
 ==== Windows XP Search
@@ -1462,6 +1481,7 @@ Contains the deleted document identifiers.
 |===
 
 === SystemIndex_Gthr
+
 [yellow-background]*Contains information about files indexed (gathered).*
 
 ==== Windows XP Search
@@ -1548,6 +1568,7 @@ Contains a compressed string
 |===
 
 === SystemIndex_GthrPth
+
 [yellow-background]*Contains information about locations (paths) indexed (gathered).*
 
 ==== Windows XP Search
@@ -1580,6 +1601,7 @@ Contains a compressed string
 |===
 
 === SystemIndex_Gthr_RecCount
+
 ==== Windows XP and VIsta Search
 
 [cols="1,3,5",options="header"]
@@ -1590,6 +1612,7 @@ Contains a compressed string
 |===
 
 === SystemIndex_MaxDoc
+
 [yellow-background]*Contains the largest (maximum) document identifier.*
 
 ==== Windows XP Search
@@ -1610,6 +1633,7 @@ Contains a compressed string
 |===
 
 === SystemIndex_PropertyStore
+
 ====  Windows 8 Search
 
 [cols="1,3,5",options="header"]
@@ -2009,6 +2033,7 @@ Contains a compressed string
 |===
 
 === SystemIndex_1_DATA_#
+
 Where # is a numeric value.
 
 ==== Windows 8 Search
@@ -2024,6 +2049,7 @@ Where # is a numeric value.
 |===
 
 === SystemIndex_1_OCC_#
+
 Where # is a numeric value.
 
 ==== Windows 8 Search
@@ -2036,6 +2062,7 @@ Where # is a numeric value.
 |===
 
 == Shadow tables
+
 The Window Vista Search database contains copies of tables. These copies are
 referred to as shadow tables.
 
@@ -2049,6 +2076,7 @@ referred to as shadow tables.
 |===
 
 == String compression
+
 Within the Windows Vista Search database most text data is stored in binary
 data containing compressed text. In Windows XP and 7 Search only a few strings
 are stored in this manner.
@@ -2106,16 +2134,18 @@ compression type is a can be a combination of multiple types.
 | Value | Description
 | 0x00 | Run-length compressed UTF-16 little-endian string
 | 0x01 | 8-bit compressed UTF-16 little-endian string
-| 0x02 | Byte index-based run-length compressed UTF-16 little-endian string
-| 0x03 | Byte index-based 8-bit compressed UTF-16 little-endian string
+| 0x02 | Run-length compressed UTF-16 little-endian string stored as LZXPRESS Huffman compressed data +
+Note that strings can be cut short in the middle of an UTF-16 surrogate
+| 0x03 | 8-bit compressed UTF-16 little-endian string stored as LZXPRESS Huffman compressed data
 | 0x04 | Uncompressed data
 | |
-| 0x06 | Byte index-based run-length compressed “uncompressed” data
+| 0x06 | LZXPRESS Huffman compressed data
 | |
 | [yellow-background]*0x08* | [yellow-background]*Unknown*
 |===
 
 === Run-length compressed UTF-16 little-endian string
+
 For the compressed data:
 
 1. read the byte containing the 'compression size'
@@ -2125,6 +2155,7 @@ For the compressed data:
   b. add the 'compressed byte' to the uncompressed data
 
 === 8-bit compressed UTF16 little-endian string
+
 For the compressed data:
 
 1. read a byte from the compressed data and set it in the uncompressed data
@@ -2134,43 +2165,22 @@ For the compressed data:
 The string seems to be using a codepage, although the decompression algorithm
 doesn't seems to provide compensation for this.
 
-=== Byte index-based compressed data
-The data is stored compressed if the compressed data is smaller than the
-uncompressed data.
+=== LZXPRESS Huffman compressed data
 
 [cols="1,1,1,5",options="header"]
 |===
 | Offset | Size | Value | Description
 | 0 | 2 | | The uncompressed data size
-| 2 | 256 | | The byte index table
-| 258 | ...  | | The compressed data
+| 2 | ... | | LZXPRESS Huffman compressed data
 |===
 
-1. Build a compression value table based on the byte index table
-2. Decompress the compressed data using the compression value table
-  a. if the compression value is compressed
-    i) determine the compression offset
-    ii) determine the compression size, similar to DIRECT2
-    iii) copy a part of the uncompressed buffer, similar to LZ77
-    iv) otherwise use the byte value
-
-[NOTE]
-The string seems to be using a codepage for the 8-bit value, although the
-decompression algorithm doesn't seems to provide compensation for this.
-
-==== Byte index-based run-length compressed UTF-16 little-endian string
-The byte index-based compressed data contains a run-length compressed UTF-16
-little-endian string.
-
-[NOTE]
-Some strings seem to be cut short.
-
-==== Byte index-based 8-bit compressed UTF-16 little-endian string
-The byte index-based compressed data contains a 8-bit compressed UTF-16
-little-endian string.
+For more information about LZXPRESS Huffman see:
+https://github.com/libyal/libfwnt/blob/master/documentation/Compression%20methods.asciidoc[LIBFWNT\]]
 
 == Windows definitions
+
 === [[file_attribute_flags]]File attribute flags
+
 The file attribute flags consist of the following values:
 
 [cols="1,1,5",options="header"]
@@ -2226,6 +2236,7 @@ Is virtual
 
 [appendix]
 == GNU Free Documentation License
+
 Version 1.3, 3 November 2008
 Copyright © 2000, 2001, 2002, 2007, 2008 Free Software Foundation, Inc.
 <http://fsf.org/>
@@ -2234,6 +2245,7 @@ Everyone is permitted to copy and distribute verbatim copies of this license
 document, but changing it is not allowed.
 
 === 0. PREAMBLE
+
 The purpose of this License is to make a manual, textbook, or other functional
 and useful document "free" in the sense of freedom: to assure everyone the
 effective freedom to copy and redistribute it, with or without modifying it,
@@ -2254,6 +2266,7 @@ recommend this License principally for works whose purpose is instruction or
 reference.
 
 === 1. APPLICABILITY AND DEFINITIONS
+
 This License applies to any manual or other work, in any medium, that contains
 a notice placed by the copyright holder saying it can be distributed under the
 terms of this License. Such a notice grants a world-wide, royalty-free license,
@@ -2332,6 +2345,7 @@ disclaiming warranties: any other implication that these Warranty Disclaimers
 may have is void and has no effect on the meaning of this License.
 
 === 2. VERBATIM COPYING
+
 You may copy and distribute the Document in any medium, either commercially or
 noncommercially, provided that this License, the copyright notices, and the
 license notice saying this License applies to the Document are reproduced in
@@ -2345,6 +2359,7 @@ You may also lend copies, under the same conditions stated above, and you may
 publicly display copies.
 
 === 3. COPYING IN QUANTITY
+
 If you publish printed copies (or copies in media that commonly have printed
 covers) of the Document, numbering more than 100, and the Document's license
 notice requires Cover Texts, you must enclose the copies in covers that carry,
@@ -2378,6 +2393,7 @@ well before redistributing any large number of copies, to give them a chance to
 provide you with an updated version of the Document.
 
 === 4. MODIFICATIONS
+
 You may copy and distribute a Modified Version of the Document under the
 conditions of sections 2 and 3 above, provided that you release the Modified
 Version under precisely this License, with the Modified Version filling the
@@ -2470,6 +2486,7 @@ permission to use their names for publicity for or to assert or imply
 endorsement of any Modified Version.
 
 === 5. COMBINING DOCUMENTS
+
 You may combine the Document with other documents released under this License,
 under the terms defined in section 4 above for modified versions, provided that
 you include in the combination all of the Invariant Sections of all of the
@@ -2491,6 +2508,7 @@ combine any sections Entitled "Acknowledgements", and any sections Entitled
 "Dedications". You must delete all sections Entitled "Endorsements".
 
 === 6. COLLECTIONS OF DOCUMENTS
+
 You may make a collection consisting of the Document and other documents
 released under this License, and replace the individual copies of this License
 in the various documents with a single copy that is included in the collection,
@@ -2503,6 +2521,7 @@ into the extracted document, and follow this License in all other respects
 regarding verbatim copying of that document.
 
 === 7. AGGREGATION WITH INDEPENDENT WORKS
+
 A compilation of the Document or its derivatives with other separate and
 independent documents or works, in or on a volume of a storage or distribution
 medium, is called an "aggregate" if the copyright resulting from the
@@ -2519,6 +2538,7 @@ in electronic form. Otherwise they must appear on printed covers that bracket
 the whole aggregate.
 
 === 8. TRANSLATION
+
 Translation is considered a kind of modification, so you may distribute
 translations of the Document under the terms of section 4. Replacing Invariant
 Sections with translations requires special permission from their copyright
@@ -2536,6 +2556,7 @@ If a section in the Document is Entitled "Acknowledgements", "Dedications", or
 typically require changing the actual title.
 
 === 9. TERMINATION
+
 You may not copy, modify, sublicense, or distribute the Document except as
 expressly provided under this License. Any attempt otherwise to copy, modify,
 sublicense, or distribute it is void, and will automatically terminate your
@@ -2559,6 +2580,7 @@ your rights have been terminated and not permanently reinstated, receipt of a
 copy of some or all of the same material does not give you any rights to use it.
 
 === 10. FUTURE REVISIONS OF THIS LICENSE
+
 The Free Software Foundation may publish new, revised versions of the GNU Free
 Documentation License from time to time. Such new versions will be similar in
 spirit to the present version, but may differ in detail to address new problems
@@ -2576,6 +2598,7 @@ License can be used, that proxy's public statement of acceptance of a version
 permanently authorizes you to choose that version for the Document.
 
 === 11. RELICENSING
+
 "Massive Multiauthor Collaboration Site" (or "MMC Site") means any World Wide
 Web server that publishes copyrightable works and also provides prominent
 facilities for anybody to edit those works. A public wiki that anybody can edit
