@@ -7,7 +7,7 @@
 
 DPKG_PYTHON3_DEPENDENCIES="libesedb-python3";
 
-DPKG_PYTHON3_TEST_DEPENDENCIES="python3-distutils python3-mock python3-pbr python3-setuptools python3-six";
+DPKG_PYTHON3_TEST_DEPENDENCIES="python3-coverage python3-distutils python3-mock python3-pbr python3-setuptools python3-six";
 
 RPM_PYTHON3_DEPENDENCIES="libesedb-python3";
 
@@ -108,5 +108,7 @@ elif test ${TRAVIS_OS_NAME} = "osx";
 then
 	brew update;
 
-	brew install tox;
+	# Brew will exit with 1 and print some diagnotisic information
+	# to prevent the CI test from failing || true is added.
+	brew install tox || true;
 fi
