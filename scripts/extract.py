@@ -89,6 +89,11 @@ class Sqlite3OutputWriter(object):
 class StdoutWriter(object):
   """Stdout output writer."""
 
+  def __init__(self):
+    """Initializes an output writer."""
+    super(StdoutWriter, self).__init__()
+    self._database_type = None
+
   def _GetTableLinkName(self, common_table_name):
     """Retrieves the table link name.
 
@@ -167,6 +172,7 @@ class StdoutWriter(object):
     Returns:
       bool: True if successful or False if not.
     """
+    self._database_type = database_type
     return True
 
   def WriteDatabaseDefinition(self, database_definition):
@@ -176,7 +182,7 @@ class StdoutWriter(object):
       database_definition (EseDatabaseDefinition): database definition.
     """
     print('== {0:s} {1:s}'.format(
-        database_definition.type, database_definition.version))
+        self._database_type, database_definition.version))
     print('')
 
   def WriteTableDefinitions(self, table_definitions):

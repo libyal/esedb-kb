@@ -22,7 +22,7 @@ class EseColumnDefinition(object):
       column_identifier (str): column identifier.
       column_name (str): column name.
       column_type (str): column type.
-   """
+    """
     super(EseColumnDefinition, self).__init__()
     self.identifier = column_identifier
     self.name = column_name
@@ -55,7 +55,7 @@ class EseDatabaseDefinition(object):
     Args:
       database_type (str): ESE database type.
       database_version (str): ESE database version.
-   """
+    """
     super(EseDatabaseDefinition, self).__init__()
     self.type = database_type
     self.version = database_version
@@ -77,7 +77,7 @@ class EseTableDefinition(object):
     Args:
       table_name (str): table name.
       template_table_name (str): template table name.
-   """
+    """
     super(EseTableDefinition, self).__init__()
     self._common_name = None
     self.aliases = []
