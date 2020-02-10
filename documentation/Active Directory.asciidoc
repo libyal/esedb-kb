@@ -1,4 +1,4 @@
-= Windows Mail database
+= Active Directory database
 
 :toc:
 :toclevels: 4
@@ -7,12 +7,12 @@
 [abstract]
 == Summary
 
-Windows Mail uses the Extensible Storage Engine (ESE) Database File (EDB)
-format to store its folder data. This specification is based on available
+Microsoft Active Directory uses the Extensible Storage Engine (ESE) Database
+File (EDB) format to store its tables. This specification is based on available
 documentation and was enhanced by analyzing test data.
 
-This document is intended as a working document for the Windows Mail database
-format specification.
+This document is intended as a working document for the Active Directory
+database format specification.
 
 [preface]
 == Document information
@@ -20,16 +20,16 @@ format specification.
 [cols="1,5"]
 |===
 | Author(s): | Joachim Metz <joachim.metz@gmail.com>
-| Abstract: | This document contains information about the Windows Mail database
+| Abstract: | This document contains information about the Active Directory database
 | Classification: | Public
-| Keywords: | Windows Mail, Extensible Storage Engine, ESE, EDB
+| Keywords: | Active Directory, Extensible Storage Engine, ESE, EDB
 |===
 
 [preface]
 == License
 
 ....
-Copyright (C) 2009-2018, Joachim Metz <joachim.metz@gmail.com>.
+Copyright (C) 2009-2020, Joachim Metz <joachim.metz@gmail.com>.
 Permission is granted to copy, distribute and/or modify this document under the
 terms of the GNU Free Documentation License, Version 1.3 or any later version
 published by the Free Software Foundation; with no Invariant Sections, no
@@ -43,93 +43,265 @@ in the section entitled "GNU Free Documentation License".
 [cols="1,1,1,5",options="header"]
 |===
 | Version | Author | Date | Comments
-| 0.0.1 | J.B. Metz | November 2009 | Worked on initial version.
+| 0.0.1 | J.B. Metz | October 2009 | Worked on initial version.
 | 0.0.2 | J.B. Metz | June 2010 | Small changes.
-| 0.0.3 | J.B. Metz | August 2012 | Email and license update.
-| 0.0.4 | J.B. Metz | March 2015 | Switched to asciidoc format.
-| 0.0.5 | J.B. Metz | January 2018 | Updated libesedb reference.
+| 0.0.3 | J.B. Metz | August 2012 | Updated email address.
+| 0.0.4 | J.B. Metz | February 2020 | Switched to asciidoc format.
 |===
 
 :numbered:
 == Overview
 
-Windows Mail uses the Extensible Storage Engine (ESE) Database File (EDB)
-format to store its folder data. Windows Mail stores its data in a file named:
+Active Directory uses the Extensible Storage Engine (ESE) Database File (EDB)
+format to store its tables. Active Directory stores its data in a file named:
 
 ....
-%USERPROFILE%\AppData\Local\Microsoft\Windows Mail\WindowsMail.MSMessageStore
+%SystemRoot%\ntds\NTDS.DIT
 ....
 
 For more information about EDB see `[LIBESEDB09]`.
 
 === Test version
 
-The following version of programs were used to test the information within this document:
+The following version of programs were used to test the information within
+this document:
 
-* Windows Vista Mail
+* Windows 2003 SBS Active Directory
 
 == Tables
 
-=== Streams
+The Active Directory ESE database consists of the following tables:
+
+[cols="1,3,5",options="header"]
+|===
+| Table usage | Table name | Description
+| Schema table | sd_table +
+sdproptable | Contains schema information: the types of objects that can be created in the Active Directory, relationships between them, and the optional and mandatory attributes on each type of object.
+| Link table | link_table | Contains configuration information: linked attributes, which refer to other objects in the Active Directory.
+| Data table | datatable | Contains domain information like: users, groups, application-specific data, and any other data stored in the Active Directory.
+|===
+
+=== Datatable
+
+==== Active Directory 2000
 
 [cols="1,3,5",options="header"]
 |===
 | Column identifier | Column name | Column type
-| 1 | Id | Integer 32-bit signed
-| 256 | Path | Large text
+| 1 | DNT_col Integer | 32-bit signed +
+Distinguished Name Tag (DNT)
+| 2 | DispTYpeT_col | Integer 32-bit signed
+| 3 | OBJ_col Integer | 8-bit unsigned
+| 4 | RDNtyp_col | Integer 32-bit signed +
+Relative Distinguished Name (RDN) type
+| 5 | cnt_col Integer | 32-bit signed
+| 6 | time_col | Integer 32-bit signed
+| 7 | NCDNT_col | Integer 32-bit signed +
+Naming Context Distinguished Name Tag (NCDNT)
+| 8 | Level_col | Integer 32-bit signed
+| 9 | IsVisibleInAB | Integer 8-bit unsigned
+| 128 | RDN_col | Text +
+The Relative Distinguished Name (RDN)
+| 256 | PDNT_col | Integer 32-bit signed +
+Parent Distinguished Name Tag (PDNT)
+| 257 | Ancestors | Binary data
+| | Attribute columns |
 |===
 
-=== UserDataTable
+==== Active Directory 2003
 
 [cols="1,3,5",options="header"]
 |===
 | Column identifier | Column name | Column type
-| 1 | FolderId | Integer 64-bit signed
-| 2 | Id | Integer 32-bit signed
-| 256 | Table | Large text
-| 257 | Data | Large binary data
+| 1 | DNT_col | Integer 32-bit signed +
+Distinguished Name Tag (DNT)
+| 2 | PDNT_col | Integer 32-bit signed +
+Parent Distinguished Name Tag (PDNT)
+| 3 | OBJ_col | Integer 8-bit unsigned +
+Object
+| 4 | RDNtyp_col | Integer 32-bit signed +
+Relative Distinguished Name (RDN) type
+| 5 | cnt_col | Integer 32-bit signed
+| 6 | ab_cnt_col | Integer 32-bit signed
+| 7 | time_col | Currency (64-bit)
+| 8 | NCDNT_col | Integer 32-bit signed +
+Naming Context Distinguished Name Tag (NCDNT)
+| 9 | IsVisibleInAB | Integer 8-bit unsigned
+| 256 | Ancestors_col | Large binary data
+| | Attribute columns |
+| 1233 | clean_col | Integer 8-bit unsigned
 |===
 
-=== Folders
+===== Notes
+
+According to `[MSDN]` the NCDNT column which references the partition to which
+the object belongs an NCDNT value of 3617 which mean it belong to NC (naming
+context) whose value is 3617.
+
+The Distinguished Name Tag is used as a unique identifier within the Active
+Directory Database.
+
+Directory Management Domain (DMD) is the class that holds the schema.
+
+==== Attribute columns
+
+[yellow-background]*TODO: describe*
+
+=== link_table
+
+==== Active Directory 2000
 
 [cols="1,3,5",options="header"]
 |===
-| 1 | FLDCOL_ID | Integer 64-bit signed
-| 2 | FLDCOL_PARENT | Integer 64-bit signed
-| 3 | FLDCOL_NAMEHASH | Integer 32-bit signed
-| 4 | FLDCOL_FLAGS | Integer 32-bit signed
-| 5 | FLDCOL_MESSAGES | Integer 32-bit signed
-| 6 | FLDCOL_UNREAD | Integer 32-bit signed
-| 7 | FLDCOL_SPECIAL | Integer 8-bit unsigned
-| 8 | FLDCOL_TYPE | Integer 8-bit unsigned
-| 9 | FLDCOL_HIERARCHY | Integer 8-bit unsigned
-| 10 | FLDCOL_LISTSTAMP | Integer 32-bit signed
-| 11 | FLDCOL_SERVERHIGH | Integer 32-bit signed
-| 12 | FLDCOL_SERVERLOW | Integer 32-bit signed
-| 13 | FLDCOL_SERVERCOUNT | Integer 32-bit signed
-| 14 | FLDCOL_CLIENTHIGH | Integer 32-bit signed
-| 15 | FLDCOL_CLIENTLOW | Integer 32-bit signed
-| 16 | FLDCOL_NOTDOWNLOADED | Integer 32-bit signed
-| 17 | FLDCOL_THREADUNREAD | Integer 32-bit signed
-| 18 | FLDCOL_VIEWUNREAD | Integer 32-bit signed
-| 19 | FLDCOL_STATUSMSGDELTA | Integer 32-bit signed
-| 20 | FLDCOL_STATUSUNREADDELTA | Integer 32-bit signed
-| 21 | FLDCOL_WATCHEDHIGH | Integer 32-bit signed
-| 22 | FLDCOL_WATCHEDUNREAD | Integer 32-bit signed
-| 23 | FLDCOL_WATCHED | Integer 32-bit signed
-| 24 | FLDCOL_SUBSCRIBED | Integer 8-bit unsigned
-| 25 | FLDCOL_IGNORED | Integer 32-bit signed
-| 128 | FLDCOL_COMMUNITYREFRESH | Binary data
-| 256 | FLDCOL_NAME | Large text
-| 257 | FLDCOL_NAMEW | Large text
-| 258 | FLDCOL_FILE | Large text
-| 259 | FLDCOL_DESCRIPTION | Large text
-| 260 | FLDCOL_ACCOUNTID | Large text
-| 261 | FLDCOL_REQUESTED | Large binary data
-| 262 | FLDCOL_URLCOMPONENT | Large text
-| 263 | FLDCOL_READ | Large binary data
-| 264 | FLDCOL_PATH | Large text
+| Column identifier | Column name | Column type
+| 1 | link_DNT | Integer 32-bit signed
+| 2 | backlink_DNT | Integer 32-bit signed
+| 3 | link_base | Integer 32-bit signed
+| 256 | link_ndesc | Integer 32-bit signed
+| 257 | link_data | Large binary data
 |===
+
+==== Active Directory 2003
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | link_DNT | Integer 32-bit signed
+| 2 | backlink_DNT | Integer 32-bit signed
+| 3 | link_base | Integer 32-bit signed
+| 4 | link_deltime | Currency (64-bit)
+| 5 | link_usnchanged | Currency (64-bit)
+| 6 | link_ncdnt | Integer 32-bit signed
+| 128 | link_metadata | Binary data
+| 256 | link_data | Large binary data
+| 257 | link_ndesc | Integer 32-bit signed
+|===
+
+=== hiddentable
+
+==== Active Directory 2000
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | usn_col | Integer 32-bit signed
+| 256 | dsa_col | Large binary data
+|===
+
+==== Active Directory 2003
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | usn_col | Currency (64-bit)
+| 2 | dsa_col | Integer 32-bit signed
+| 3 | state_col | Integer 32-bit signed
+| 4 | flags_col | Binary data
+| 5 | backupusn_col | Currency (64-bit)
+| 6 | backupexpiration_col | Currency (64-bit)
+|===
+
+=== sdproptable
+
+Schema data property table
+
+==== Active Directory 2003
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | order_col | Integer 32-bit signed
+| 2 | begindnt_col | Integer 32-bit signed
+| 3 | trimmable_col | Integer 8-bit unsigned
+| 4 | clientid_col | Integer 32-bit signed
+| 5 | flags_col | Integer 32-bit signed
+| 256 | checkpoint_col | Large binary data
+|===
+
+=== sd_table
+
+Schema data table
+
+==== Active Directory 2003
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | sd_id | Currency (64-bit)
+| 2 | sd_hash | Binary data
+| 3 | sd_refcount | Integer 32-bit signed
+| 256 | sd_value | Large binary data
+|===
+
+=== quota_table
+
+==== Active Directory 2003 SBS
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | quota_NCDNT | Integer 32-bit signed
+| 2 | quota_tombstoned | Integer 32-bit signed
+| 3 | quota_total | Integer 32-bit signed
+| 128 | quota_SID | Binary data
+|===
+
+=== quota_rebuild_progress_table
+
+==== Active Directory 2003 SBS
+
+[cols="1,3,5",options="header"]
+|===
+| Column identifier | Column name | Column type
+| 1 | quota_rebuild_DNT_Last | Integer 32-bit signed
+| 2 | quota_rebuild_DNT_Max | Integer 32-bit signed
+| 3 | quota_rebuild_fDone | Boolean
+|===
+
+== Notes: Types
+
+=== The RDN type
+
+rdnType is an abstract attribute present on every object. The rdnType of an
+object is the RDN attribute of the object, that is, an ATTRTYP that identifies
+the attributeSchema object of the RDN attribute. rdnType is not represented in
+the schema and does not replicate in the normal way.
+
+On an originating Add, the new object's rdnType is derived from the most
+specific structural object class of the new object.
+
+On a replicated Add, rdnType is derived as follows:
+
+* If the forest functional level is less than DS_BEHAVIOR_WIN2003, rdnType is derived from the objectClass of the object, which replicates.
+* If the forest functional level is DS_BEHAVIOR_WIN2003 or greater, rdnType is derived from the DN of the object, which replicates.
+
+Active Directory includes the rdnType attribute on every object. An object's
+value of rdnType is the object's RDN attribute at object creation time—the
+identifier, not its associated value.
+
+ATTRTYP is a concrete type for a compact representation of an OID. An ATTRTYP
+is a 32-bit unsigned integer that can be mapped to and from an object
+representing an attribute.
+
+=== ATTRTYP
+
+Any OID-valued quantity stored on an object is stored as an ATTRTYP, a 32-bit
+unsigned integer. The ATTRTYP space is 32 bits wide and is divided into the
+following ranges.
+
+[cols="1,5",options="header"]
+|===
+| Range | Description
+| `[0x00000000..0x7fffffff]` | ATTRTYPs that map to OIDs via the prefix table.
+| `[0x80000000..0xbfffffff]` | ATTRTYPs used as values of msDS-IntId attribute.
+| `[0xc0000000..0xfffeffff]` | Reserved for future use.
+| `[0xffff0000.. 0xffffffff]` | Reserved for internal use (never appear on the wire).
+|===
+
+The mapping from ATTRTYP A to OID O works as follows:
+
+* If A in `[0x00000000..0x7fffffff]`, A maps to O via a prefix table as specified in [MS-DRSR] section 5.16.4 (the OidFromAttid procedure).
+* If A in `[0x80000000..0xbfffffff]`, let X be the object such that X!msDS-IntId equals A. If X is an attributeSchema object, O is X!attributeID; otherwise X is an classSchema object, and O is X!governsID.
 
 :numbered!:
 [appendix]
