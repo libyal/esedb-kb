@@ -152,7 +152,7 @@ class Sqlite3DatabaseFile(object):
       elif value is None:
         value = 'NULL'
       else:
-        raise RuntimeError('Unsupported value type: {0:s}.'.format(
+        raise RuntimeError('Unsupported value type: {0!s}.'.format(
             type(value)))
       sql_values.append(value)
 
