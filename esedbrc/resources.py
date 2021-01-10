@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """ESE database resources."""
 
-from __future__ import unicode_literals
-
 import difflib
 
 

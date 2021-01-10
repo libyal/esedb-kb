@@ -2,9 +2,6 @@
 # -*- coding: utf-8 -*-
 """Script to extract an ESE database catalog."""
 
-from __future__ import print_function
-from __future__ import unicode_literals
-
 import argparse
 import logging
 import os

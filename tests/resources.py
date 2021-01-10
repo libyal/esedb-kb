@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the ESE database resources."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from esedbrc import resources

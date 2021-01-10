@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """ESE database catalog extractor."""
 
-from __future__ import unicode_literals
-
 import pyesedb
 
 from esedbrc import resources

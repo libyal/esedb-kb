@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """Definitions."""
 
-from __future__ import unicode_literals
-
 import pyesedb
 
 

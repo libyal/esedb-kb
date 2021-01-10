@@ -2,8 +2,6 @@
 # -*- coding: utf-8 -*-
 """Tests for the ESE database catalog extractor."""
 
-from __future__ import unicode_literals
-
 import unittest
 
 from esedbrc import catalog_extractor
