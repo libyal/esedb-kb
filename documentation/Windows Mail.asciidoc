@@ -142,7 +142,7 @@ The following version of programs were used to test the information within this 
 | Title: | Extensible Storage Engine (ESE) Database File (EDB) format
 | Author(s): | Joachim Metz
 | Date: | September 2009
-| URL: | https://github.com/libyal/libesedb/blob/master/documentation/Extensible%20Storage%20Engine%20(ESE)%20Database%20File%20(EDB)%20format.asciidoc
+| URL: | https://github.com/libyal/libesedb/blob/main/documentation/Extensible%20Storage%20Engine%20(ESE)%20Database%20File%20(EDB)%20format.asciidoc
 |===
 
 [appendix]

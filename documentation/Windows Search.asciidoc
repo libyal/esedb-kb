@@ -2175,7 +2175,7 @@ doesn't seems to provide compensation for this.
 |===
 
 For more information about LZXPRESS Huffman see:
-https://github.com/libyal/libfwnt/blob/master/documentation/Compression%20methods.asciidoc[LIBFWNT\]]
+https://github.com/libyal/libfwnt/blob/main/documentation/Compression%20methods.asciidoc[LIBFWNT\]]
 
 == Windows definitions
 
@@ -2231,7 +2231,7 @@ Is virtual
 | Title: | Extensible Storage Engine (ESE) Database File (EDB) format
 | Author(s): | Joachim Metz
 | Date: | September 2009
-| URL: | https://github.com/libyal/libesedb/blob/master/documentation/Extensible%20Storage%20Engine%20(ESE)%20Database%20File%20(EDB)%20format.asciidoc
+| URL: | https://github.com/libyal/libesedb/blob/main/documentation/Extensible%20Storage%20Engine%20(ESE)%20Database%20File%20(EDB)%20format.asciidoc
 |===
 
 [appendix]
