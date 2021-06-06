@@ -134,8 +134,10 @@ Contains little-endian FILETIME
 | 256 | Url | Large text
 | 257 | Filename | Large text
 | 258 | FileExtension | Large text
-| 259 | RequestHeaders | Large binary data
-| 260 | ResponseHeaders | Large binary data
+| 259 | RequestHeaders | Large binary data +
+Contains an UTF-8 encoded string
+| 260 | ResponseHeaders | Large binary data +
+Contains an UTF-8 encoded string
 | 261 | RedirectUrl | Large text
 | 262 | Group | Large binary data
 | 263 | ExtraData | Large binary data
@@ -162,8 +164,10 @@ Contains little-endian FILETIME
 | 9 | Type | Integer 32-bit unsigned
 | 10 | FileSize | Integer 64-bit signed
 | 256 | Url | Large text
-| 257 | RequestHeaders | Large binary data
-| 258 | ResponseHeaders | Large binary data
+| 257 | RequestHeaders | Large binary data +
+Contains an UTF-8 encoded string
+| 258 | ResponseHeaders | Large binary data +
+Contains an UTF-8 encoded string
 | 259 | Filename | Large text
 | 260 | ExtraData | Large binary data +
 Contains extra data such as HTTP headers
