@@ -57,8 +57,8 @@ napoleon_include_special_with_doc = True
 
 # General information about the project.
 # pylint: disable=redefined-builtin
-project = 'esedb-kb'
-copyright = 'The esedb-kb Project Authors'
+project = 'Extensible Storage Engine (ESE) database knowledge base'
+copyright = 'The Extensible Storage Engine (ESE) database knowledge base authors'
 version = esedbrc.__version__
 release = esedbrc.__version__
 
@@ -83,7 +83,7 @@ pygments_style = 'sphinx'
 html_theme = 'sphinx_rtd_theme'
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'esedb-kb'
+htmlhelp_basename = 'esedbkbdoc'
 
 
 # -- Options linkcheck ----------------------------------------------------
