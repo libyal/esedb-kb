@@ -110,7 +110,7 @@ else:
               '%files -n {0:s}-%{{name}}'.format(python_package),
               '%defattr(644,root,root,755)',
               '%license LICENSE',
-              '%doc README']
+              '%doc ACKNOWLEDGEMENTS AUTHORS README']
 
           lines.extend([
               '%{python3_sitelib}/esedbrc/*.py',
@@ -130,13 +130,21 @@ else:
               '%package -n {0:s}-%{{name}}'.format(python_package))
           python_summary = 'Python 3 module of {0:s}'.format(summary)
 
-          if requires:
-            python_spec_file.append('Requires: {0:s}'.format(requires))
-
           python_spec_file.extend([
+              'Requires: {0:s}'.format(requires),
               'Summary: {0:s}'.format(python_summary),
               '',
               '%description -n {0:s}-%{{name}}'.format(python_package)])
+
+          python_spec_file.extend(description)
+
+          python_spec_file.extend([
+              '%package -n %{name}-tools',
+              'Requires: {0:s}-esedb-kb >= %{{version}}'.format(
+                  python_package),
+              'Summary: Tools for {0:s}'.format(summary),
+              '',
+              '%description -n %{name}-tools'])
 
           python_spec_file.extend(description)
 
@@ -148,6 +156,11 @@ else:
           description.append(line)
 
         python_spec_file.append(line)
+
+      python_spec_file.extend([
+          '',
+          '%files -n %{name}-tools',
+          '%{_bindir}/*.py'])
 
       return python_spec_file
 
