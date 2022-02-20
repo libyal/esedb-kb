@@ -68,22 +68,26 @@ License update.
 
 Windows Search uses the Extensible Storage Engine (ESE) Database File (EDB)
 format to store its data. Windows Search stores its data in a directory named:
+
 ....
 %Common Program Data%\Microsoft\Search\Data\Applications\Windows\
 ....
 
 On Windows XP and earlier:
+
 ....
 C:\Documents and Settings\All Users\Application Data\Microsoft\Search\Data\Applications\Windows\
 ....
 
 On Windows Vista and later:
+
 ....
 C:\ProgramData\Microsoft\Search\Data\Applications\Windows\
 ....
 
 The default location of this directory is dependent on the Windows version and
 is controlled by the DataDirectory value in the following Registry Key:
+
 ....
 HKLM\Software\Microsoft\Windows Search
 ....
@@ -91,6 +95,7 @@ HKLM\Software\Microsoft\Windows Search
 This directory contains several files of which the following:
 
 Database file:
+
 ....
 Windows.edb
 ....
@@ -98,21 +103,25 @@ Windows.edb
 For more information about EDB see `[LIBESEDB09]`.
 
 Checkpoint file:
+
 ....
 MSS.chk
 ....
 
 Current transaction log file:
+
 ....
 MSS.chk
 ....
 
 Transaction log files:
+
 ....
 MSS#####.log
 ....
 
 Reserved transaction log files:
+
 ....
 MSSres00001.jrs
 MSSres00002.jrs
@@ -126,6 +135,7 @@ normal transaction logs cannot be written to.
 ____
 
 Temporary Database file:
+
 ....
 tmp.edb
 ....
@@ -2082,6 +2092,7 @@ data containing compressed text. In Windows XP and 7 Search only a few strings
 are stored in this manner.
 
 Part of the compression method is the following obfuscation method.
+
 ....
 bitmask32  = 0x05000113;
 
@@ -2117,11 +2128,13 @@ for( encoded_data_iterator = 0;
 ....
 
 The initial bitmask (bitmask32) is created by a 32-bit XOR of the values in the SID:
+
 ....
 S-1-5-12
 ....
 
 Which is stored as the following byte values:
+
 ....
 01 01 00 00 00 00 00 05 12 00 00 00
 ....

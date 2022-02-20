@@ -1,0 +1,51 @@
+name: esedb
+type: format
+description: Extensible Storage Engine (ESE) Database File (EDB) format
+attributes:
+  byte_order: little-endian
+layout:
+- data_type: esedb_file_header
+  offset: 0
+---
+name: byte
+type: integer
+attributes:
+  format: unsigned
+  size: 1
+  units: bytes
+---
+name: uint32
+type: integer
+attributes:
+  format: unsigned
+  size: 4
+  units: bytes
+---
+name: uint64
+type: integer
+attributes:
+  format: unsigned
+  size: 8
+  units: bytes
+---
+name: esedb_file_header
+type: structure
+description: Extensible Storage Engine (ESE) Database File (EDB) file header
+members:
+- name: checksum
+  data_type: uint32
+- name: signature
+  data_type: uint32
+  value: 0x89abcdef
+- name: format_version
+  data_type: uint32
+- name: file_type
+  data_type: uint32
+- name: database_time
+  data_type: uint64
+- name: database_signature
+  type: stream
+  element_data_type: byte
+  elements_data_size: 28
+- name: database_state
+  data_type: uint32

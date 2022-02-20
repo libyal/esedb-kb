@@ -114,6 +114,7 @@ else:
 
           lines.extend([
               '%{python3_sitelib}/esedbrc/*.py',
+              '%{python3_sitelib}/esedbrc/*.yaml',
               '%{python3_sitelib}/esedbrc*.egg-info/*',
               '',
               '%exclude %{_prefix}/share/doc/*',
@@ -221,10 +222,15 @@ setup(
     package_dir={
         'esedbrc': 'esedbrc'
     },
+    include_package_data=True,
+    package_data={
+        'esedbrc': ['*.yaml']
+    },
+    zip_safe=False,
     scripts=glob.glob(os.path.join('scripts', '[a-z]*.py')),
     data_files=[
         ('share/doc/esedb-kb', [
-            'LICENSE', 'README']),
+            'ACKNOWLEDGEMENTS', 'AUTHORS', 'LICENSE', 'README']),
     ],
     install_requires=parse_requirements_from_file('requirements.txt'),
     tests_require=parse_requirements_from_file('test_requirements.txt'),
