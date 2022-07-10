@@ -4,6 +4,7 @@ artifacts >= 20211205
 cffi >= 1.9.1
 cryptography >= 2.0.2
 dfdatetime >= 20211113
+dfimagetools >= 20220129
 dfvfs >= 20220121
 dfwinreg >= 20201002
 dtfabric >= 20170524
