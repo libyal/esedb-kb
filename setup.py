@@ -204,6 +204,7 @@ setup(
     version=esedbrc.__version__,
     description=esedbrc_description,
     long_description=esedbrc_long_description,
+    long_description_content_type='text/plain',
     license='Apache License, Version 2.0',
     url='https://github.com/libyal/esedb-kb',
     maintainer='Joachim Metz',
