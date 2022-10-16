@@ -118,7 +118,7 @@ class EseTableDefinition(object):
       if self.name.index(self._common_name) == 0:
         # If the table name ends with a number replace it with a #
         if self.name[len(self._common_name):].isdigit():
-          self._common_name = '{0:s}#'.format(self._common_name)
+          self._common_name = f'{self._common_name:s}#'
 
     return self._common_name
 
@@ -148,8 +148,8 @@ class ColumnOverlay(object):
   @property
   def comparable(self):
     """str: comparable identifier."""
-    return 'identifier: {0:s}, name: {1:s}, type: {2:s}'.format(
-        self.column_identifier, self.column_name, self.column_type)
+    return (f'identifier: {self.column_identifier:s}, name: '
+            f'{self.column_name:s}, type: {self.column_type:s}')
 
 
 class TableOverlay(object):
@@ -179,7 +179,7 @@ class TableOverlay(object):
       KeyError: if the column overlay is already set.
     """
     if column_overlay.comparable in self._column_overlays:
-      raise KeyError('Column overlay: {0:s} already set.'.format(
-          column_overlay.comparable))
+      raise KeyError(
+          f'Column overlay: {column_overlay.comparable:s} already set.')
 
     self._column_overlays[column_overlay.comparable] = column_overlay

@@ -58,10 +58,9 @@ class Sqlite3OutputWriter(object):
     if not os.path.isdir(self._databases_path):
       return False
 
-    database_filename = '{0:s}.db'.format(database_type)
     self._database_writer = database.EseDbCatalogSqlite3DatabaseWriter()
     self._database_writer.Open(os.path.join(
-        self._databases_path, database_filename))
+        self._databases_path, f'{database_type:s}.db'))
 
     return True
 
@@ -100,7 +99,7 @@ class StdoutWriter(object):
     Returns:
       str: table link name.
     """
-    link_name = 'table_{0:s}'.format(common_table_name.lower())
+    link_name = '_'.join(['table', common_table_name.lower()])
     if link_name.endswith('_#'):
       link_name = link_name[:-2]
 
@@ -114,9 +113,8 @@ class StdoutWriter(object):
     """
     column_type = definitions.COLUMN_TYPE_DESCRIPTIONS.get(
         column_definition.type, 'UNKNOWN')
-    print('| {0:d} | {1:s} | {2:s}'.format(
-        column_definition.identifier, column_definition.name,
-        column_type))
+    print((f'| {column_definition.identifier:d} | {column_definition.name:s} | '
+           f'{column_type:s}'))
 
   def _WriteTableDefinition(self, table_definition):
     """Writes the table definition.
@@ -145,11 +143,10 @@ class StdoutWriter(object):
     common_table_name = table_definition.GetCommonName()
     link_name = self._GetTableLinkName(common_table_name)
 
-    print('=== [[{0:s}]]{1:s}'.format(link_name, common_table_name))
+    print(f'=== [[{link_name:s}]]{common_table_name:s}')
 
     if table_definition.template_table_name:
-      print('Template table: {0:s}'.format(
-          table_definition.template_table_name))
+      print(f'Template table: {table_definition.template_table_name:s}')
 
     print('')
     print('[cols="1,3,5",options="header"]')
@@ -178,8 +175,7 @@ class StdoutWriter(object):
     Args:
       database_definition (EseDatabaseDefinition): database definition.
     """
-    print('== {0:s} {1:s}'.format(
-        self._database_type, database_definition.version))
+    print(f'== {self._database_type:s} {database_definition.version:s}')
     print('')
 
   def WriteTableDefinitions(self, table_definitions):
@@ -195,7 +191,7 @@ class StdoutWriter(object):
       common_table_name = table_definition.GetCommonName()
       link_name = self._GetTableLinkName(common_table_name)
 
-      print('* <<{0:s},{1:s}>>'.format(link_name, common_table_name))
+      print(f'* <<{link_name:s},{common_table_name:s}>>')
 
     print('')
 
@@ -241,7 +237,7 @@ def Main():
     return False
 
   if not os.path.exists(options.source):
-    print('No such source: {0:s}.'.format(options.source))
+    print(f'No such source: {options.source:s}.')
     print('')
     return False
 
@@ -263,7 +259,7 @@ def Main():
       os.mkdir(options.database)
 
     if not os.path.isdir(options.database):
-      print('{0:s} must be a directory'.format(options.database))
+      print(f'{options.database:s} must be a directory')
       print('')
       return False
 

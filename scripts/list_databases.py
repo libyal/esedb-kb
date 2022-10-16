@@ -105,7 +105,7 @@ def Main():
       print('/'.join(path_segments))
 
   except dfvfs_errors.ScannerError as exception:
-    print('[ERROR] {0!s}'.format(exception), file=sys.stderr)
+    print(f'[ERROR] {exception!s}', file=sys.stderr)
     print('')
     return False
 

@@ -56,10 +56,9 @@ class Sqlite3DatabaseFile(object):
     if self.read_only:
       raise RuntimeError('Cannot create table database in read-only mode.')
 
-    sql_query = 'CREATE TABLE {0:s} ( {1:s} )'.format(
-        table_name, ', '.join(column_definitions))
-
-    self._cursor.execute(sql_query)
+    column_definitions = ', '.join(column_definitions)
+    self._cursor.execute(
+        f'CREATE TABLE {table_name:s} ( {column_definitions:s} )')
 
   def GetValues(self, table_names, column_names, condition):
     """Retrieves values from a table.
@@ -78,11 +77,12 @@ class Sqlite3DatabaseFile(object):
     if not self._connection:
       raise RuntimeError('Cannot retrieve values database not opened.')
 
-    if condition:
-      condition = ' WHERE {0:s}'.format(condition)
+    table_names = ', '.join(table_names)
+    column_names_string = ', '.join(column_names)
 
-    sql_query = 'SELECT {1:s} FROM {0:s}{2:s}'.format(
-        ', '.join(table_names), ', '.join(column_names), condition)
+    sql_query = f'SELECT {column_names_string:s} FROM {table_names:s}'
+    if condition:
+      sql_query = ''.join([sql_query, f' WHERE {condition:s}'])
 
     self._cursor.execute(sql_query)
 
@@ -140,22 +140,26 @@ class Sqlite3DatabaseFile(object):
     for value in values:
       if isinstance(value, str):
         # In sqlite3 the double quote is escaped with a second double quote.
-        value = '"{0:s}"'.format(re.sub('"', '""', value))
+        value = re.sub('"', '""', value)
+        value = f'"{value:s}"'
       elif isinstance(value, int):
-        value = '{0:d}'.format(value)
+        value = f'{value:d}'
       elif isinstance(value, float):
-        value = '{0:f}'.format(value)
+        value = f'{value:f}'
       elif value is None:
         value = 'NULL'
       else:
-        raise RuntimeError('Unsupported value type: {0!s}.'.format(
-            type(value)))
+        value_type = type(value)
+        raise RuntimeError(f'Unsupported value type: {value_type!s}.')
+
       sql_values.append(value)
 
-    sql_query = 'INSERT INTO {0:s} ( {1:s} ) VALUES ( {2:s} )'.format(
-        table_name, ', '.join(column_names), ', '.join(sql_values))
+    column_names = ', '.join(column_names)
+    sql_values = ', '.join(sql_values)
 
-    self._cursor.execute(sql_query)
+    self._cursor.execute(
+        f'INSERT INTO {table_name:s} ( {column_names:s} ) '
+        f'VALUES ( {sql_values:s} )')
 
   def Open(self, filename, read_only=False):
     """Opens the database file.
@@ -255,8 +259,9 @@ class EseDbCatalogSqlite3DatabaseWriter(Sqlite3DatabaseWriter):
     """
     table_names = ['database_definitions']
     column_names = ['database_definition_key']
-    condition = 'type = "{0:s}" AND version = "{1:s}"'.format(
-        ese_database_definition.type, ese_database_definition.version)
+    condition = (
+        f'type = "{ese_database_definition.type:s}" AND '
+        f'version = "{ese_database_definition.version:s}"')
     values_list = list(self._database_file.GetValues(
         table_names, column_names, condition))
 
@@ -284,7 +289,7 @@ class EseDbCatalogSqlite3DatabaseWriter(Sqlite3DatabaseWriter):
     """
     table_names = ['table_definitions']
     column_names = ['table_definition_key']
-    condition = 'name = "{0:s}"'.format(ese_table_definition.name)
+    condition = f'name = "{ese_table_definition.name:s}"'
     values_list = list(self._database_file.GetValues(
         table_names, column_names, condition))
 
@@ -318,8 +323,9 @@ class EseDbCatalogSqlite3DatabaseWriter(Sqlite3DatabaseWriter):
       insert_values = True
 
     else:
-      condition = 'name = "{0:s}" AND table_definition_key = {1:d}'.format(
-          ese_column_definition.name, table_definition_key)
+      condition = (
+          f'name = "{ese_column_definition.name:s}" AND '
+          f'table_definition_key = {table_definition_key:d}')
       values_list = list(self._database_file.GetValues(
           [table_name], column_names, condition))
 
@@ -351,8 +357,9 @@ class EseDbCatalogSqlite3DatabaseWriter(Sqlite3DatabaseWriter):
       insert_values = True
 
     else:
-      condition = 'type = "{0:s}" AND version = "{1:s}"'.format(
-          ese_database_definition.type, ese_database_definition.version)
+      condition = (
+          f'type = "{ese_database_definition.type:s}" AND '
+          f'version = "{ese_database_definition.version:s}"')
       values_list = list(self._database_file.GetValues(
           [table_name], column_names, condition))
 
@@ -382,7 +389,7 @@ class EseDbCatalogSqlite3DatabaseWriter(Sqlite3DatabaseWriter):
       insert_values = True
 
     else:
-      condition = 'name = "{0:s}"'.format(ese_table_definition.name)
+      condition = f'name = "{ese_table_definition.name:s}"'
       values_list = list(self._database_file.GetValues(
           [table_name], column_names, condition))
 
