@@ -1,4 +1,4 @@
 # -*- coding: utf-8 -*-
-"""Windows Event Log resources (winevtrc)."""
+"""Extensible Storage Engine (ESE) Database resources (esedbrc)."""
 
 __version__ = '20211228'
