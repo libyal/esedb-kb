@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Windows Registry related functions and classes for testing."""
+"""Functions and classes for testing."""
 
 import os
 import unittest
