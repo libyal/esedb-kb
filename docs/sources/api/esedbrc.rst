@@ -28,6 +28,14 @@ esedbrc.definitions module
    :undoc-members:
    :show-inheritance:
 
+esedbrc.file\_entry\_lister module
+----------------------------------
+
+.. automodule:: esedbrc.file_entry_lister
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 esedbrc.resources module
 ------------------------
 
