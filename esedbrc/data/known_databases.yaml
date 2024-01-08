@@ -1,0 +1,4 @@
+# esedb-kb database definitions
+---
+artifact_definition: WindowsCortanaDatabase
+database_identifier: windows_CortanaCoreDb.dat
