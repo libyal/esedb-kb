@@ -55,26 +55,6 @@ class EseColumnDefinition(object):
         'type': self.type}
 
 
-class EseDatabaseDefinition(object):
-  """ESE database definition.
-
-  Attributes:
-    type (str): ESE database type.
-    version (str): ESE database version.
-  """
-
-  def __init__(self, database_type, database_version):
-    """Initializes an ESE database database definition.
-
-    Args:
-      database_type (str): ESE database type.
-      database_version (str): ESE database version.
-    """
-    super(EseDatabaseDefinition, self).__init__()
-    self.type = database_type
-    self.version = database_version
-
-
 class EseTableDefinition(object):
   """ESE database table definition.
 
@@ -137,65 +117,3 @@ class EseTableDefinition(object):
           self._common_name = f'{self._common_name:s}#'
 
     return self._common_name
-
-
-class ColumnOverlay(object):
-  """Column overlay.
-
-  Attributes:
-    identifier (str): column identifier.
-    name (str): column name.
-    type (str): column type.
-  """
-
-  def __init__(self, column_identifier, column_name, column_type):
-    """Initializes a column overlay.
-
-    Args:
-      column_identifier (str): column identifier.
-      column_name (str): column name.
-      column_type (str): column type.
-    """
-    super(ColumnOverlay, self).__init__()
-    self.column_identifier = column_identifier
-    self.column_name = column_name
-    self.column_type = column_type
-
-  @property
-  def comparable(self):
-    """str: comparable identifier."""
-    return (f'identifier: {self.column_identifier:s}, name: '
-            f'{self.column_name:s}, type: {self.column_type:s}')
-
-
-class TableOverlay(object):
-  """Table overlay.
-
-  Attributes:
-    name (str): table name.
-  """
-
-  def __init__(self, table_name):
-    """Initializes a table overlay.
-
-    Args:
-      table_name (str): table name.
-    """
-    super(TableOverlay, self).__init__()
-    self._column_overlays = {}
-    self.table_name = table_name
-
-  def AddColumnOverlay(self, column_overlay):
-    """Adds a column overlay.
-
-    Args:
-      column_overlay (ColumnOverlay): column overlay.
-
-    Raises:
-      KeyError: if the column overlay is already set.
-    """
-    if column_overlay.comparable in self._column_overlays:
-      raise KeyError(
-          f'Column overlay: {column_overlay.comparable:s} already set.')
-
-    self._column_overlays[column_overlay.comparable] = column_overlay

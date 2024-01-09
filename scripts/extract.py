@@ -7,196 +7,13 @@ import logging
 import os
 import sys
 
-from esedbrc import catalog_extractor
-from esedbrc import definitions
-from esedbrc import database
+from dfvfs.helpers import command_line as dfvfs_command_line
+from dfvfs.helpers import volume_scanner as dfvfs_volume_scanner
+from dfvfs.lib import errors as dfvfs_errors
 
+from dfimagetools import helpers
 
-class Sqlite3OutputWriter(object):
-  """SQLite3 output writer."""
-
-  def __init__(self, databases_path):
-    """Initializes an output writer.
-
-    Args:
-      databases_path (str): path to the database files.
-    """
-    super(Sqlite3OutputWriter, self).__init__()
-    self._databases_path = databases_path
-    self._database_writer = None
-
-  def _WriteTableDefinition(self, table_definition):
-    """Writes the table definition.
-
-    Args:
-      table_definition (EseTableDefinition): table definition.
-    """
-    # TODO: detect tables with duplicate names and different definitions.
-    self._database_writer.WriteTableDefinition(table_definition)
-
-    table_definition_key = self._database_writer.GetTableDefinitionKey(
-        table_definition)
-
-    for column_definition in table_definition.column_definitions:
-      self._database_writer.WriteColumnDefinition(
-          table_definition_key, column_definition)
-
-  def Close(self):
-    """Closes the output writer object."""
-    self._database_writer.Close()
-    self._database_writer = None
-
-  def Open(self, database_type):
-    """Opens the output writer object.
-
-    Args:
-      database_type (str): ESE database type.
-
-    Returns:
-      bool: True if successful or False if not.
-    """
-    if not os.path.isdir(self._databases_path):
-      return False
-
-    self._database_writer = database.EseDbCatalogSqlite3DatabaseWriter()
-    self._database_writer.Open(os.path.join(
-        self._databases_path, f'{database_type:s}.db'))
-
-    return True
-
-  def WriteDatabaseDefinition(self, database_definition):
-    """Writes the database definition.
-
-    Args:
-      database_definition (EseDatabaseDefinition): database definition.
-    """
-    self._database_writer.WriteDatabaseDefinition(database_definition)
-
-  def WriteTableDefinitions(self, table_definitions):
-    """Writes the table definitions.
-
-    Args:
-      table_definitions (list[EseTableDefinition]): table definitions.
-    """
-    for table_definition in table_definitions:
-      self._WriteTableDefinition(table_definition)
-
-
-class StdoutWriter(object):
-  """Stdout output writer."""
-
-  def __init__(self):
-    """Initializes an output writer."""
-    super(StdoutWriter, self).__init__()
-    self._database_type = None
-
-  def _GetTableLinkName(self, common_table_name):
-    """Retrieves the table link name.
-
-    Args:
-      common_table_name (str): common table name.
-
-    Returns:
-      str: table link name.
-    """
-    link_name = '_'.join(['table', common_table_name.lower()])
-    if link_name.endswith('_#'):
-      link_name = link_name[:-2]
-
-    return link_name
-
-  def _WriteColumnDefinition(self, column_definition):
-    """Writes the column definition.
-
-    Args:
-      column_definition (EseColumnDefinition): column definition.
-    """
-    column_type = definitions.COLUMN_TYPE_DESCRIPTIONS.get(
-        column_definition.type, 'UNKNOWN')
-    print((f'| {column_definition.identifier:d} | {column_definition.name:s} | '
-           f'{column_type:s}'))
-
-  def _WriteTableDefinition(self, table_definition):
-    """Writes the table definition.
-
-    Args:
-      table_definition (EseTableDefinition): table definition.
-    """
-    self._WriteTableHeader(table_definition)
-
-    for column_definition in table_definition.column_definitions:
-      self._WriteColumnDefinition(column_definition)
-
-    self._WriteTableFooter()
-
-  def _WriteTableFooter(self):
-    """Writes the table footer."""
-    print('|===')
-    print('')
-
-  def _WriteTableHeader(self, table_definition):
-    """Writes the table header.
-
-    Args:
-      table_definition (EseTableDefinition): table definition.
-    """
-    common_table_name = table_definition.GetCommonName()
-    link_name = self._GetTableLinkName(common_table_name)
-
-    print(f'=== [[{link_name:s}]]{common_table_name:s}')
-
-    if table_definition.template_table_name:
-      print(f'Template table: {table_definition.template_table_name:s}')
-
-    print('')
-    print('[cols="1,3,5",options="header"]')
-    print('|===')
-    print('| Column indentifier | Column name | Column type')
-
-  def Close(self):
-    """Closes the output writer object."""
-    return
-
-  def Open(self, database_type):  # pylint: disable=unused-argument
-    """Opens the output writer object.
-
-    Args:
-      database_type (str): ESE database type.
-
-    Returns:
-      bool: True if successful or False if not.
-    """
-    self._database_type = database_type
-    return True
-
-  def WriteDatabaseDefinition(self, database_definition):
-    """Writes the database definition.
-
-    Args:
-      database_definition (EseDatabaseDefinition): database definition.
-    """
-    print(f'== {self._database_type:s} {database_definition.version:s}')
-    print('')
-
-  def WriteTableDefinitions(self, table_definitions):
-    """Writes the table definitions.
-
-    Args:
-      table_definitions (list[EseTableDefinition]): table definitions.
-    """
-    print('=== Tables')
-    print('')
-
-    for table_definition in table_definitions:
-      common_table_name = table_definition.GetCommonName()
-      link_name = self._GetTableLinkName(common_table_name)
-
-      print(f'* <<{link_name:s},{common_table_name:s}>>')
-
-    print('')
-
-    for table_definition in table_definitions:
-      self._WriteTableDefinition(table_definition)
+from esedbrc import schema_extractor
 
 
 def Main():
@@ -205,86 +22,141 @@ def Main():
   Returns:
     bool: True if successful or False if not.
   """
-  args_parser = argparse.ArgumentParser(description=(
+  argument_parser = argparse.ArgumentParser(description=(
       'Extract the catalog from the ESE database file.'))
 
-  args_parser.add_argument(
-      'source', action='store', nargs='?', default=None,
-      help='path of the ESE database file.', metavar='/mnt/c/')
+  # TODO: add data group.
+  argument_parser.add_argument(
+      '--artifact_definitions', '--artifact-definitions',
+      dest='artifact_definitions', type=str, metavar='PATH', action='store',
+      help=('Path to a directory or file containing the artifact definition '
+            '.yaml files.'))
 
-  args_parser.add_argument(
-      'database_type', action='store', nargs='?', default=None,
-      help='string that identifies the ESE database type.',
-      metavar='search')
+  argument_parser.add_argument(
+      '--output', dest='output', action='store', metavar='./sqlite-kb/',
+      default=None, help='Directory to write the output to.')
 
-  args_parser.add_argument(
-      'database_version', action='store', nargs='?', default=None,
-      help='string that identifies the ESE database version.',
-      metavar='XP')
+  # TODO: add source group.
+  argument_parser.add_argument(
+      '--back_end', '--back-end', dest='back_end', action='store',
+      metavar='NTFS', default=None, help='preferred dfVFS back-end.')
 
-  args_parser.add_argument(
-      '--db', '--database', action='store', default=None,
-      help='directory to write the sqlite3 databases to.',
-      metavar='./esedb-kb/', dest='database')
+  argument_parser.add_argument(
+      '--partitions', '--partition', dest='partitions', action='store',
+      type=str, default=None, help=(
+          'Define partitions to be processed. A range of partitions can be '
+          'defined as: "3..5". Multiple partitions can be defined as: "1,3,5" '
+          '(a list of comma separated values). Ranges and lists can also be '
+          'combined as: "1,3..5". The first partition is 1. All partitions '
+          'can be specified with: "all".'))
 
-  options = args_parser.parse_args()
+  argument_parser.add_argument(
+      '--snapshots', '--snapshot', dest='snapshots', action='store', type=str,
+      default=None, help=(
+          'Define snapshots to be processed. A range of snapshots can be '
+          'defined as: "3..5". Multiple snapshots can be defined as: "1,3,5" '
+          '(a list of comma separated values). Ranges and lists can also be '
+          'combined as: "1,3..5". The first snapshot is 1. All snapshots can '
+          'be specified with: "all".'))
+
+  argument_parser.add_argument(
+      '--volumes', '--volume', dest='volumes', action='store', type=str,
+      default=None, help=(
+          'Define volumes to be processed. A range of volumes can be defined '
+          'as: "3..5". Multiple volumes can be defined as: "1,3,5" (a list '
+          'of comma separated values). Ranges and lists can also be combined '
+          'as: "1,3..5". The first volume is 1. All volumes can be specified '
+          'with: "all".'))
+
+  argument_parser.add_argument(
+      'source', nargs='?', action='store', metavar='image.raw', default=None,
+      help='path of a storage media image or ESE database file.')
+
+  options = argument_parser.parse_args()
 
   if not options.source:
     print('Source value is missing.')
     print('')
-    args_parser.print_help()
+    argument_parser.print_help()
     print('')
     return False
 
-  if not os.path.exists(options.source):
-    print(f'No such source: {options.source:s}.')
+  if not options.artifact_definitions:
+    print('Path to artifact definitions is missing.')
+    print('')
+    argument_parser.print_help()
     print('')
     return False
 
-  if not options.database_type:
-    print('Database type value is missing.')
-    print('')
-    return False
+  if options.output:
+    if not os.path.exists(options.output):
+      os.mkdir(options.output)
 
-  if not options.database_version:
-    print('Database version value is missing.')
-    print('')
-    return False
+    if not os.path.isdir(options.output):
+      print(f'{options.output:s} must be a directory')
+      print('')
+      return False
+
+  helpers.SetDFVFSBackEnd(options.back_end)
 
   logging.basicConfig(
       level=logging.INFO, format='[%(levelname)s] %(message)s')
 
-  if options.database:
-    if not os.path.exists(options.database):
-      os.mkdir(options.database)
+  mediator = dfvfs_command_line.CLIVolumeScannerMediator()
 
-    if not os.path.isdir(options.database):
-      print(f'{options.database:s} must be a directory')
-      print('')
-      return False
+  volume_scanner_options = dfvfs_volume_scanner.VolumeScannerOptions()
+  volume_scanner_options.partitions = mediator.ParseVolumeIdentifiersString(
+      options.partitions)
 
-    output_writer = Sqlite3OutputWriter(options.database)
+  if options.snapshots == 'none':
+    volume_scanner_options.snapshots = ['none']
   else:
-    output_writer = StdoutWriter()
+    volume_scanner_options.snapshots = mediator.ParseVolumeIdentifiersString(
+        options.snapshots)
 
-  if not output_writer.Open(options.database_type):
-    print('Unable to open output writer.')
+  volume_scanner_options.volumes = mediator.ParseVolumeIdentifiersString(
+      options.volumes)
+
+  extractor = schema_extractor.EseDbSchemaExtractor(
+      options.artifact_definitions, mediator=mediator)
+
+  try:
+    for database_identifier, database_schema in extractor.ExtractSchemas(
+        options.source, options=volume_scanner_options):
+      if not database_schema:
+        continue
+
+      output_text = extractor.FormatSchema(database_schema, 'yaml')
+      if not options.output:
+        print(output_text)
+      else:
+        file_exists = False
+        output_file = None
+        for number in range(1, 99):
+          filename = f'{database_identifier:s}.{number:d}.yaml'
+          output_file = os.path.join(options.output, filename)
+          if not os.path.exists(output_file):
+            break
+
+          with open(output_file, 'r', encoding='utf-8') as existing_file_object:
+            existing_output_text = existing_file_object.read()
+            if output_text == existing_output_text:
+              file_exists = True
+              break
+
+        if not file_exists:
+          with open(output_file, 'w', encoding='utf-8') as output_file_object:
+            output_file_object.write(output_text)
+
+  except dfvfs_errors.ScannerError as exception:
+    print(f'[ERROR] {exception!s}', file=sys.stderr)
     print('')
     return False
 
-  # TODO: do something with options.database_type, options.database_version
-  # or remove.
-
-  extractor = catalog_extractor.EseDbCatalogExtractor()
-
-  # TODO: read table and index overlays from file.
-  # maybe something for an export script.
-  # overlays = {}
-
-  # TODO: add support to read multiple files from a directory.
-
-  extractor.ExtractCatalog(options.source, output_writer)
-  output_writer.Close()
+  except KeyboardInterrupt:
+    print('Aborted by user.', file=sys.stderr)
+    print('')
+    return False
 
   return True
 
