@@ -4,22 +4,6 @@ esedbrc package
 Submodules
 ----------
 
-esedbrc.catalog\_extractor module
----------------------------------
-
-.. automodule:: esedbrc.catalog_extractor
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-esedbrc.database module
------------------------
-
-.. automodule:: esedbrc.database
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 esedbrc.definitions module
 --------------------------
 
@@ -40,6 +24,22 @@ esedbrc.resources module
 ------------------------
 
 .. automodule:: esedbrc.resources
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+esedbrc.schema\_extractor module
+--------------------------------
+
+.. automodule:: esedbrc.schema_extractor
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+esedbrc.yaml\_definitions\_file module
+--------------------------------------
+
+.. automodule:: esedbrc.yaml_definitions_file
    :members:
    :undoc-members:
    :show-inheritance:

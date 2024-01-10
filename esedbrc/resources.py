@@ -33,9 +33,9 @@ class EseColumnDefinition(object):
     """Initializes an ESE database column definition.
 
     Args:
-      column_identifier (str): column identifier.
+      column_identifier (int): column identifier.
       column_name (str): column name.
-      column_type (str): column type.
+      column_type (int): column type.
     """
     super(EseColumnDefinition, self).__init__()
     self.identifier = column_identifier
@@ -83,9 +83,9 @@ class EseTableDefinition(object):
     """Adds a column.
 
     Args:
-      column_identifier (str): column identifier.
+      column_identifier (int): column identifier.
       column_name (str): column name.
-      column_type (str): column type.
+      column_type (int): column type.
     """
     ese_column_definition = EseColumnDefinition(
         column_identifier, column_name, column_type)
