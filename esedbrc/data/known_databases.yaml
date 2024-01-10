@@ -1,4 +1,19 @@
 # esedb-kb database definitions
 ---
+artifact_definition: InternetExplorerHistory
+database_identifier: windows_WebCacheVXX.dat
+---
+artifact_definition: WindowsBITSQueueManagerDatabases
+database_identifier: windows_bits_qmgr.db
+---
 artifact_definition: WindowsCortanaDatabase
 database_identifier: windows_CortanaCoreDb.dat
+---
+artifact_definition: WindowsSearchDatabase
+database_identifier: windows_search_Windows.edb
+---
+artifact_definition: WindowsSecuritySettingsDatabases
+database_identifier: windows_secedit.sdb
+---
+artifact_definition: WindowsSystemResourceUsageMonitorDatabaseFile
+database_identifier: windows_SRUDB.dat

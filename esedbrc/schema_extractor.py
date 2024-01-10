@@ -220,6 +220,8 @@ class EseDbSchemaExtractor(object):
             is_unique_table = False
 
         if is_unique_table:
+          # TODO: generalize name of unique tables e.g. change AppCacheEntryEx_9
+          # into AppCacheEntryEx_# or AppCacheEntryEx_1
           unique_table_definitions.append(table_definition)
 
     finally:

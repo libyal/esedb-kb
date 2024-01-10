@@ -66,9 +66,45 @@ class EseDbSchemaExtractorTest(test_lib.BaseTestCase):
 
     self.assertEqual(yaml_data, expected_yaml_data)
 
-  # TODO: add tests for _GetDatabaseSchema
   # TODO: add tests for _GetDatabaseIdentifier
-  # TODO: add tests for _GetDatabaseSchemaFromFileObject
+
+  def testGetDatabaseSchema(self):
+    """Tests the _GetDatabaseSchema function."""
+    test_extractor = schema_extractor.EseDbSchemaExtractor(
+        self._ARTIFACT_DEFINITIONS_PATH)
+
+    database_path = self._GetTestFilePath(['WebCacheV01.dat'])
+    schema = test_extractor._GetDatabaseSchema(database_path)
+
+    self.assertIsNotNone(schema)
+    self.assertEqual(len(schema), 10)
+
+    table_definition = schema[0]
+    self.assertIsNotNone(table_definition)
+    self.assertEqual(len(table_definition.aliases), 1)
+    self.assertEqual(len(table_definition.column_definitions), 27)
+    self.assertEqual(table_definition.name, 'MSysObjects')
+    self.assertIsNone(table_definition.template_table_name)
+
+  def testGetDatabaseSchemaFromFileObject(self):
+    """Tests the _GetDatabaseSchemaFromFileObject function."""
+    test_extractor = schema_extractor.EseDbSchemaExtractor(
+        self._ARTIFACT_DEFINITIONS_PATH)
+
+    database_path = self._GetTestFilePath(['WebCacheV01.dat'])
+    with open(database_path, 'rb') as file_object:
+      schema = test_extractor._GetDatabaseSchemaFromFileObject(file_object)
+
+    self.assertIsNotNone(schema)
+    self.assertEqual(len(schema), 10)
+
+    table_definition = schema[0]
+    self.assertIsNotNone(table_definition)
+    self.assertEqual(len(table_definition.aliases), 1)
+    self.assertEqual(len(table_definition.column_definitions), 27)
+    self.assertEqual(table_definition.name, 'MSysObjects')
+    self.assertIsNone(table_definition.template_table_name)
+
   # TODO: add tests for GetDisplayPath
   # TODO: add tests for ExtractSchemas
   # TODO: add tests for FormatSchema
