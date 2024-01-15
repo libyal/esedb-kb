@@ -7,6 +7,8 @@ import logging
 import os
 import sys
 
+import artifacts
+
 from dfvfs.helpers import command_line as dfvfs_command_line
 from dfvfs.helpers import volume_scanner as dfvfs_volume_scanner
 from dfvfs.lib import errors as dfvfs_errors
@@ -81,7 +83,16 @@ def Main():
     print('')
     return False
 
-  if not options.artifact_definitions:
+  artifact_definitions = options.artifact_definitions
+  if not artifact_definitions:
+    artifact_definitions = os.path.join(
+        os.path.dirname(artifacts.__file__), 'data')
+    if not os.path.exists(artifact_definitions):
+      artifact_definitions = os.path.join('/', 'usr', 'share', 'artifacts')
+    if not os.path.exists(artifact_definitions):
+      artifact_definitions = None
+
+  if not artifact_definitions:
     print('Path to artifact definitions is missing.')
     print('')
     argument_parser.print_help()
@@ -118,7 +129,7 @@ def Main():
       options.volumes)
 
   extractor = schema_extractor.EseDbSchemaExtractor(
-      options.artifact_definitions, mediator=mediator)
+      artifact_definitions, mediator=mediator)
 
   try:
     for database_identifier, database_schema in extractor.ExtractSchemas(
