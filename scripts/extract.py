@@ -71,7 +71,7 @@ def Main():
           'with: "all".'))
 
   argument_parser.add_argument(
-      'source', nargs='?', action='store', metavar='image.raw', default=None,
+      'source', nargs='?', action='store', metavar='PATH', default=None,
       help='path of a storage media image or ESE database file.')
 
   options = argument_parser.parse_args()
