@@ -16,10 +16,10 @@ from esedbrc import file_entry_lister
 
 
 def Main():
-  """The main program function.
+  """Entry point of console script to list ESE database file entries.
 
   Returns:
-    bool: True if successful or False if not.
+    int: exit code that is provided to sys.exit().
   """
   argument_parser = argparse.ArgumentParser(description=(
       'Lists file entries that contain an ESE database.'))
@@ -67,7 +67,7 @@ def Main():
     print('')
     argument_parser.print_help()
     print('')
-    return False
+    return 1
 
   dfimagetools_helpers.SetDFVFSBackEnd(options.back_end)
 
@@ -97,7 +97,7 @@ def Main():
     if not base_path_specs:
       print('No supported file system found in source.')
       print('')
-      return False
+      return 1
 
     for _, path_segments in entry_lister.ListDatabaseFileEntries(
         base_path_specs):
@@ -107,18 +107,15 @@ def Main():
   except dfvfs_errors.ScannerError as exception:
     print(f'[ERROR] {exception!s}', file=sys.stderr)
     print('')
-    return False
+    return 1
 
   except KeyboardInterrupt:
     print('Aborted by user.', file=sys.stderr)
     print('')
-    return False
+    return 1
 
-  return True
+  return 0
 
 
 if __name__ == '__main__':
-  if not Main():
-    sys.exit(1)
-  else:
-    sys.exit(0)
+  sys.exit(Main())

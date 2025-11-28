@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "esedbrc"
-version = "20251126"
+version = "20251128"
 description = "Extensible Storage Engine (ESE) database resources (esedbrc)"
 maintainers = [
     { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
@@ -57,6 +57,10 @@ dependencies = [
     "pytsk3 >= 20210419",
     "xattr >= 0.7.2 ; platform_system != \"Windows\"",
 ]
+
+[project.scripts]
+extract = "esedbrc.scripts.extract:Main"
+list_databases = "esedbrc.scripts.list_databases:Main"
 
 [project.urls]
 Documentation = "https://esedbrc.readthedocs.io/en/latest"
