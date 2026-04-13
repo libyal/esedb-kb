@@ -1,6 +1,14 @@
 esedbrc package
 ===============
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   esedbrc.scripts
+
 Submodules
 ----------
 
