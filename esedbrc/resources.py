@@ -1,10 +1,9 @@
-# -*- coding: utf-8 -*-
 """ESE database resources."""
 
 import difflib
 
 
-class DatabaseDefinition(object):
+class DatabaseDefinition:
   """Database definition.
 
   Attributes:
@@ -15,12 +14,12 @@ class DatabaseDefinition(object):
 
   def __init__(self):
     """Initializes a database definition."""
-    super(DatabaseDefinition, self).__init__()
+    super().__init__()
     self.artifact_definition = None
     self.database_identifier = None
 
 
-class EseColumnDefinition(object):
+class EseColumnDefinition:
   """ESE database column definition.
 
   Attributes:
@@ -37,7 +36,7 @@ class EseColumnDefinition(object):
       column_name (str): column name.
       column_type (int): column type.
     """
-    super(EseColumnDefinition, self).__init__()
+    super().__init__()
     self.identifier = column_identifier
     self.name = column_name
     self.type = column_type
@@ -55,7 +54,7 @@ class EseColumnDefinition(object):
         'type': self.type}
 
 
-class EseTableDefinition(object):
+class EseTableDefinition:
   """ESE database table definition.
 
   Attributes:
@@ -72,7 +71,7 @@ class EseTableDefinition(object):
       table_name (str): table name.
       template_table_name (str): template table name.
     """
-    super(EseTableDefinition, self).__init__()
+    super().__init__()
     self._common_name = None
     self.aliases = []
     self.column_definitions = []

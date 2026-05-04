@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """Script to list file entries that contain an ESE database."""
 
 import argparse

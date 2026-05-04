@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 """ESE database schema extractor."""
 
 import logging
@@ -18,7 +17,7 @@ from esedbrc import resources
 from esedbrc import yaml_definitions_file
 
 
-class EseDbSchemaExtractor(object):
+class EseDbSchemaExtractor:
   """ESE database schema extractor."""
 
   _DATABASE_DEFINITIONS_FILE = (
@@ -35,7 +34,7 @@ class EseDbSchemaExtractor(object):
       mediator (Optional[dfvfs.VolumeScannerMediator]): a volume scanner
           mediator.
     """
-    super(EseDbSchemaExtractor, self).__init__()
+    super().__init__()
     self._artifacts_registry = artifacts_registry.ArtifactDefinitionsRegistry()
     self._known_database_definitions = {}
     self._mediator = mediator

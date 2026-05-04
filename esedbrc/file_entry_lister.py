@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """Volume scanner for ESE databases."""
 
 import os
@@ -24,7 +23,7 @@ class ESEDatabaseFileEntryLister(
       mediator (Optional[dfvfs.VolumeScannerMediator]): a volume scanner
           mediator.
     """
-    super(ESEDatabaseFileEntryLister, self).__init__(mediator=mediator)
+    super().__init__(mediator=mediator)
     self._data_type_fabric = self._ReadDataTypeFabricDefinitionFile(
         'format.yaml')
     self._data_type_maps = {}

@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """YAML-based database definitions file."""
 
 import yaml
@@ -6,7 +5,7 @@ import yaml
 from esedbrc import resources
 
 
-class YAMLDatabaseDefinitionsFile(object):
+class YAMLDatabaseDefinitionsFile:
   """YAML-based database definitions file.
 
   A YAML-based database definitions file contains one or more database
