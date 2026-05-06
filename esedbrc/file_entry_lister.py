@@ -55,7 +55,8 @@ class ESEDatabaseFileEntryLister(
     if not structure_values:
       return None
 
-    return '0x{format_version:x}'.format(**structure_values.__dict__)
+    format_version = structure_values.get('format_version')
+    return f'0x{format_version:x}'
 
   def _GetDataTypeMap(self, name):
     """Retrieves a data type map defined by the definition file.
@@ -69,7 +70,7 @@ class ESEDatabaseFileEntryLister(
       dtfabric.DataTypeMap: data type map which contains a data type definition,
           such as a structure, that can be mapped onto binary data.
     """
-    data_type_map = self._data_type_maps.get(name, None)
+    data_type_map = self._data_type_maps.get(name)
     if not data_type_map:
       data_type_map = self._data_type_fabric.CreateDataTypeMap(name)
       self._data_type_maps[name] = data_type_map

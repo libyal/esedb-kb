@@ -51,7 +51,7 @@ class DependencyDefinition:
     self.version_property = None
 
 
-class DependencyDefinitionReader(object):
+class DependencyDefinitionReader:
   """Dependency definition reader."""
 
   _VALUE_NAMES = frozenset([
