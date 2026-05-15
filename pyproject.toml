@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "esedbrc"
-version = "20260506"
+version = "20260515"
 description = "Extensible Storage Engine (ESE) database resources (esedbrc)"
 maintainers = [
     { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
@@ -66,6 +66,16 @@ list_databases = "esedbrc.scripts.list_databases:Main"
 Documentation = "https://esedbrc.readthedocs.io/en/latest"
 Homepage = "https://github.com/libyal/esedb-kb"
 Repository = "https://github.com/libyal/esedb-kb"
+
+[tool.black]
+line-length = 88
+target-version = ["py310"]
+include = "\\.pyi?$"
+
+[tool.docformatter]
+black = true
+non-cap = []
+non-strict = true
 
 [tool.setuptools]
 package-dir = {"esedbrc" = "esedbrc"}

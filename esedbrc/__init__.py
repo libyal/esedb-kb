@@ -1,3 +1,3 @@
 """Extensible Storage Engine (ESE) Database resources (esedbrc)."""
 
-__version__ = '20260413'
+__version__ = "20260413"

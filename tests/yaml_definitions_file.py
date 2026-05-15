@@ -9,66 +9,68 @@ from tests import test_lib
 
 
 class YAMLDatabaseDefinitionsFileTest(test_lib.BaseTestCase):
-  """Tests for the YAML-based database definitions file."""
+    """Tests for the YAML-based database definitions file."""
 
-  # pylint: disable=protected-access
+    # pylint: disable=protected-access
 
-  _TEST_YAML = {
-      'artifact_definition': 'MacOSNotesSQLiteDatabaseFile',
-      'database_identifier': 'Notes.storedata'}
+    _TEST_YAML = {
+        "artifact_definition": "MacOSNotesSQLiteDatabaseFile",
+        "database_identifier": "Notes.storedata",
+    }
 
-  def testReadDatabaseDefinition(self):
-    """Tests the _ReadDatabaseDefinition function."""
-    test_definitions_file = yaml_definitions_file.YAMLDatabaseDefinitionsFile()
+    def testReadDatabaseDefinition(self):
+        """Tests the _ReadDatabaseDefinition function."""
+        test_definitions_file = yaml_definitions_file.YAMLDatabaseDefinitionsFile()
 
-    definitions = test_definitions_file._ReadDatabaseDefinition(self._TEST_YAML)
+        definitions = test_definitions_file._ReadDatabaseDefinition(self._TEST_YAML)
 
-    self.assertIsNotNone(definitions)
-    self.assertEqual(
-        definitions.artifact_definition, 'MacOSNotesSQLiteDatabaseFile')
-    self.assertEqual(definitions.database_identifier, 'Notes.storedata')
+        self.assertIsNotNone(definitions)
+        self.assertEqual(
+            definitions.artifact_definition, "MacOSNotesSQLiteDatabaseFile"
+        )
+        self.assertEqual(definitions.database_identifier, "Notes.storedata")
 
-    with self.assertRaises(RuntimeError):
-      test_definitions_file._ReadDatabaseDefinition({})
+        with self.assertRaises(RuntimeError):
+            test_definitions_file._ReadDatabaseDefinition({})
 
-    with self.assertRaises(RuntimeError):
-      test_definitions_file._ReadDatabaseDefinition({
-          'artifact_definition': 'MacOSNotesSQLiteDatabaseFile'})
+        with self.assertRaises(RuntimeError):
+            test_definitions_file._ReadDatabaseDefinition(
+                {"artifact_definition": "MacOSNotesSQLiteDatabaseFile"}
+            )
 
-    with self.assertRaises(RuntimeError):
-      test_definitions_file._ReadDatabaseDefinition({
-          'database_identifier': 'Notes.storedata'})
+        with self.assertRaises(RuntimeError):
+            test_definitions_file._ReadDatabaseDefinition(
+                {"database_identifier": "Notes.storedata"}
+            )
 
-    with self.assertRaises(RuntimeError):
-      test_definitions_file._ReadDatabaseDefinition({
-          'bogus': 'test'})
+        with self.assertRaises(RuntimeError):
+            test_definitions_file._ReadDatabaseDefinition({"bogus": "test"})
 
-  def testReadFromFileObject(self):
-    """Tests the _ReadFromFileObject function."""
-    test_file_path = self._GetTestFilePath(['known_databases.yaml'])
-    self._SkipIfPathNotExists(test_file_path)
+    def testReadFromFileObject(self):
+        """Tests the _ReadFromFileObject function."""
+        test_file_path = self._GetTestFilePath(["known_databases.yaml"])
+        self._SkipIfPathNotExists(test_file_path)
 
-    test_definitions_file = yaml_definitions_file.YAMLDatabaseDefinitionsFile()
+        test_definitions_file = yaml_definitions_file.YAMLDatabaseDefinitionsFile()
 
-    with open(test_file_path, 'r', encoding='utf-8') as file_object:
-      definitions = list(test_definitions_file._ReadFromFileObject(file_object))
+        with open(test_file_path, "r", encoding="utf-8") as file_object:
+            definitions = list(test_definitions_file._ReadFromFileObject(file_object))
 
-    self.assertEqual(len(definitions), 1)
+        self.assertEqual(len(definitions), 1)
 
-  def testReadFromFile(self):
-    """Tests the ReadFromFile function."""
-    test_file_path = self._GetTestFilePath(['known_databases.yaml'])
-    self._SkipIfPathNotExists(test_file_path)
+    def testReadFromFile(self):
+        """Tests the ReadFromFile function."""
+        test_file_path = self._GetTestFilePath(["known_databases.yaml"])
+        self._SkipIfPathNotExists(test_file_path)
 
-    test_definitions_file = yaml_definitions_file.YAMLDatabaseDefinitionsFile()
+        test_definitions_file = yaml_definitions_file.YAMLDatabaseDefinitionsFile()
 
-    definitions = list(test_definitions_file.ReadFromFile(test_file_path))
+        definitions = list(test_definitions_file.ReadFromFile(test_file_path))
 
-    self.assertEqual(len(definitions), 1)
+        self.assertEqual(len(definitions), 1)
 
-    self.assertEqual(
-        definitions[0].artifact_definition, 'WindowsCortanaDatabase')
+        self.assertEqual(definitions[0].artifact_definition, "WindowsCortanaDatabase")
 
 
-if __name__ == '__main__':
-  unittest.main()
+if __name__ == "__main__":
+    unittest.main()
