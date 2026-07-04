@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "esedbrc"
-version = "20260515"
+version = "20260704"
 description = "Extensible Storage Engine (ESE) database resources (esedbrc)"
 maintainers = [
     { name = "Joachim Metz", email = "joachim.metz@gmail.com" },
@@ -76,6 +76,14 @@ include = "\\.pyi?$"
 black = true
 non-cap = []
 non-strict = true
+
+[tool.l2tdevtools]
+name = "Extensible Storage Engine (ESE) database knowledge base"
+status = "experimental"
+description = """
+esedbrc is a Python module part of esedb-kb to allow reuse of Extensible \
+Storage Engine (ESE) database resources. \
+"""
 
 [tool.setuptools]
 package-dir = {"esedbrc" = "esedbrc"}
