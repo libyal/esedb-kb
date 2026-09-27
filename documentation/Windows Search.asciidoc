@@ -2230,12 +2230,14 @@ Is virtual
 
 `[DOUGLAS09]`
 
+// typos:disable
 [cols="1,5",options="header"]
 |===
 | Title: | Forensic Artefacts Present in Microsoft Windows Desktop Search
 | Author(s): | John Douglas
 | Date: | February 2009
 |===
+// typos:enable
 
 `[LIBESEDB09]`
 

@@ -10,7 +10,7 @@ artifact_definition: WindowsCortanaDatabase
 database_identifier: windows_CortanaCoreDb.dat
 ---
 artifact_definition: WindowsHelpCenterDatabaseFile
-database_identifier: windws_HCdata.edb
+database_identifier: windows_HCdata.edb
 ---
 artifact_definition: WindowsSearchDatabaseFile
 database_identifier: windows_search_Windows.edb
